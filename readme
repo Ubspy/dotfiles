@@ -1,0 +1,6 @@
+gtk theme: Matcha-dark-alix
+atom syntax theme: seti
+icon theme: numix
+file manager: thunar
+mouse cursor: openzone
+i3lock-fancy doesn't work unless you remove the textcolor option for some reason
