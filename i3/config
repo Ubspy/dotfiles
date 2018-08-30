@@ -209,7 +209,7 @@ exec "albert &"
 exec "compton; compton &"
 
 # Start status bar
-exec "polybar top -q &"
+exec "polybar top -q"
 
 # Start conky
 exec "conky -q &"
