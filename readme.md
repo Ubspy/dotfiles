@@ -32,12 +32,12 @@
 - Install `python-pywal` package and run `wal -i /path/to/image` to set the image that dictates the color themes
 
 ## TODO List
-[-] Get better cursor theme
-[-] Get user icon and set it in lightdm
-[-] Get a better status bar
-[-] Get a better application launcher
-[-] Get better gtk theme
-[-] Put new config files into repo 
+- [ ] Get better cursor theme
+- [ ] Get user icon and set it in lightdm
+- [ ] Get a better status bar
+- [ ] Get a better application launcher
+- [ ] Get better gtk theme
+- [ ] Put new config files into repo 
 
 gtk theme: Matcha-dark-alix
 atom syntax theme: seti
