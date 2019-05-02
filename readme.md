@@ -48,6 +48,8 @@
 - [ ] Get better gtk theme
 - [ ] Put new config files into repo 
 - [x] Find a way to lock the computer
+- [ ] Make install script
+- [ ] Get programs to autostart on login
 
 gtk theme: Matcha-dark-alix
 atom syntax theme: seti
