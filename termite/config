@@ -1,0 +1,7 @@
+[options]
+scrollbar = off
+
+[colors]
+foreground = #cccccc
+background = rgba(0, 0, 0, 0.3)
+

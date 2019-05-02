@@ -30,6 +30,15 @@
 - To get the config working correctly, do a lot of googling, my config file is a good start
 ### Color themes
 - Install `python-pywal` package and run `wal -i /path/to/image` to set the image that dictates the color themes
+### Get locker
+- Install `i3lock-color-git` from AUR
+- Install `i3lock-fancy-git` from AUR and edit the script file so the opacity looks acceptable
+- I had to change the opacity so it wasn't completly dark, that was on like the 4th line `hue=(-level "0%,100%,1")` the last number in there is the opacity, by default it's 0.6
+### Set sleep functionality
+- Edit the `/etc/systemd/logind.conf` file and set the appropriate parameters (mine should be in this repo)
+### Get computer to lock on sleep
+- Make a service in systemd (attached in dotfiles) to handle locking on suspend
+- The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
 
 ## TODO List
 - [ ] Get better cursor theme
@@ -38,6 +47,7 @@
 - [ ] Get a better application launcher
 - [ ] Get better gtk theme
 - [ ] Put new config files into repo 
+- [x] Find a way to lock the computer
 
 gtk theme: Matcha-dark-alix
 atom syntax theme: seti
