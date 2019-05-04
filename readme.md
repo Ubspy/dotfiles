@@ -39,6 +39,7 @@
 ### Get computer to lock on sleep
 - Make a service in systemd (attached in dotfiles) to handle locking on suspend
 - The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
+- Important note: if you're using `suspend-then-hibernate` then you probably want to set the hibernate time because the default is three hours, to do that edit the `HibernateDelaySec` line in the `/etc/systemd/sleep.conf` file
 
 ## TODO List
 - [ ] Get better cursor theme
