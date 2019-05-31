@@ -36,6 +36,15 @@
 - I had to change the opacity so it wasn't completly dark, that was on like the 4th line `hue=(-level "0%,100%,1")` the last number in there is the opacity, by default it's 0.6
 ### Set sleep functionality
 - Edit the `/etc/systemd/logind.conf` file and set the appropriate parameters (mine should be in this repo)
+- To sleep on inactivity, I tried using the systemd functionality but nothing happened, I also tried using `xautolock` but that didn't work either. Instead I used the X server to do it, you'll need to run this command `xset s 360 360` to set the sleep time to 6 mintes, and add these lines to the `/etc/X11/xorg.conf/` file under the part labled `Section "Monitor"`
+> Option "DPMS" "true"
+
+And this next under `Section "ServerLayout"` (that section didn't exist for me, so I had to creat it)
+> Option "StandbyTime" "6"
+>
+> Option "SuspendTime" "10"
+>
+> option "OffTime "20"
 ### Get computer to lock on sleep
 - Make a service in systemd (attached in dotfiles) to handle locking on suspend
 - The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
@@ -51,6 +60,8 @@
 - [x] Find a way to lock the computer
 - [ ] Make install script
 - [ ] Get programs to autostart on login
+- [ ] Power Management
+- [ ] Get Fn lock to work
 
 gtk theme: Matcha-dark-alix
 atom syntax theme: seti
