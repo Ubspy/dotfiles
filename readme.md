@@ -1,4 +1,8 @@
 # Post Install Guide (this part is more for me specifically, but if you wanna read it go ahead)
+### Installing a bootloader
+- Install the `refind-efi` package from pacman
+- Run the command `refind-install`
+- To make it look decent, install [a theme](https://github.com/bobafetthotmail/refind-theme-regular) using the command `sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/bobafetthotmail/refind-theme-regular/master/install.sh)"`
 ### Adding a new user
 - Add new user using `useradd -m -G [group] -s [shell for user] [username]`
 ### Get wireless working
@@ -41,7 +45,7 @@
 - Make a service in systemd (attached in dotfiles) to handle locking on suspend
 - The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
 - Important note: if you're using `suspend-then-hibernate` then you probably want to set the hibernate time because the default is three hours, to do that edit the `HibernateDelaySec` line in the `/etc/systemd/sleep.conf` file
-- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB_CMDLINE_LINUX_DEFAULT`
+- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB_CMDLINE_LINUX_DEFAULT` (this is for grub only, I switched from grub and I'm too afraid to delete it)
 
 ## TODO List
 - [ ] Get better cursor theme
