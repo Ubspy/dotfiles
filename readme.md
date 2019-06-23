@@ -24,6 +24,7 @@
 - Install `lightdm lightdm-webkit2-greeter` packages for the display manager, install the [Litarvan](https://github.com/Litarvan/lightdm-webkit-theme-litarvan) theme cause it's amazing
 - Set the right greeter for lightdm and the right theme for the webkit2 greeter
 - Change the picture in the directory `/usr/share/lightdm-webkit/themes/litarvan/img/background.xxxx.png` to change your background in the login
+- To change your user icon, put it in the `/var/lib/AccountsService/icons/` and change your user picture by editing the file in `/var/lib/AccountsService/users/[username]`
 ### Visual Studio Code
 - Install `code` package to get visual studio code text editor
 ### Set Wallpaper
@@ -50,19 +51,21 @@
 - Install `rofi` package, and the `papirus-icon-theme` for the icons
 - The config file only edits a few things, the icons and the color theme (which is generated with pywal)
 - If you want to edit the color theme of rofi, edit the `~/.config/wal/templates/colors-rofi-dark.rasi` file, and rerun pywal using `wal -R`
-
 ### Power management
 - Install the `tlp tlp-rdw` packages
 - Enable the tlp service `systemctl enable tlp` and `systemctl enable tlp-sleep`
 - Some laptops require additional packages for tlp: `tp_smapi acpi_call`
+### File manager
+- Install the `thunar thunar-volman gvfs tumbler` packages
+- That's literally it
 
 ## TODO List
 - [ ] Get better cursor theme
-- [ ] Get user icon and set it in lightdm
+- [x] Get user icon and set it in lightdm
 - [ ] Get a better status bar
 - [x] Get a better application launcher
 - [ ] Get better gtk theme
-- [ ] Put new config files into repo 
+- [x] Put new config files into repo 
 - [x] Find a way to lock the computer
 - [ ] Make install script
 - [ ] Get programs to autostart on login
