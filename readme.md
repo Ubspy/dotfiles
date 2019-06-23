@@ -66,7 +66,7 @@
 - [x] Find a way to lock the computer
 - [ ] Make install script
 - [ ] Get programs to autostart on login
-- [ ] Power Management
+- [x] Power Management
 - [ ] Get Fn lock to work
 
 gtk theme: Matcha-dark-alix
