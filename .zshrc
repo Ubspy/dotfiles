@@ -2,7 +2,7 @@
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
 # Set up color themes
-wal -R
+wal -R -q
 
 # Set proper language
 export LC_CTYPE=en_US.UTF-8

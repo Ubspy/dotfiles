@@ -51,6 +51,11 @@
 - The config file only edits a few things, the icons and the color theme (which is generated with pywal)
 - If you want to edit the color theme of rofi, edit the `~/.config/wal/templates/colors-rofi-dark.rasi` file, and rerun pywal using `wal -R`
 
+### Power management
+- Install the `tlp tlp-rdw` packages
+- Enable the tlp service `systemctl enable tlp` and `systemctl enable tlp-sleep`
+- Some laptops require additional packages for tlp: `tp_smapi acpi_call`
+
 ## TODO List
 - [ ] Get better cursor theme
 - [ ] Get user icon and set it in lightdm
@@ -65,7 +70,7 @@
 - [ ] Get Fn lock to work
 
 gtk theme: Matcha-dark-alix
-atom syntax theme: seti
+vs-code syntax theme: seti
 icon theme: numix
 file manager: thunar
 mouse cursor: openzone
