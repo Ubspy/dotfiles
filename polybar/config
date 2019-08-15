@@ -1,0 +1,200 @@
+[colors]
+background = ${xrdb:color0:#222}
+background-alt = #444
+foreground = ${xrdb:color7:#222}
+foreground-alt = #555
+primary = #ffb52a
+secondary = #e60053
+alert = #bd2c40
+color6 = ${xrdb:color6:#222}
+
+[bar/ubspy]
+width = 100%
+height = 27
+
+background = ${colors.background}
+foreground = ${colors.foreground}
+
+line-size = 3
+line-color = #f00
+
+border-size = 4
+border-color = ${colors.background}
+
+padding-left = 0
+padding-right = 1
+
+module-margin-left = 1
+module-margin-right = 2
+
+font-0 = DejaVuSansMono:size=10
+font-1 = Font Awesome 5 Brands Regular:style=Regular
+font-2 = Font Awesome 5 Free Solid:style=Solid
+font-3 = Font Awesome 5 Free Regular:style=Regular
+
+modules-left = i3
+modules-center = spotify
+modules-right = wifi backlight volume battery date time powermenu
+
+[module/time]
+type = internal/date
+interval = 5
+
+time = "%I:%M"
+
+label =  %time%
+
+[module/date]
+type = internal/date
+interval = 5
+
+date = "%a, %e %b"
+label =  %date%
+
+[module/volume]
+type = internal/pulseaudio
+
+format-volume = <ramp-volume> <label-volume>
+format-muted =  0%
+format-muted-foreground = #ff0000
+
+ramp-volume-0 = 
+ramp-volume-1 = 
+ramp-volume-2 = 
+
+label-volume = %percentage%%
+label-volume-foreground = ${root.foreground}
+
+bar-volume-width = 10
+bar-volume-foreground-0 = #55aa55
+bar-volume-foreground-1 = #55aa55
+bar-volume-foreground-2 = #55aa55
+bar-volume-foreground-3 = #55aa55
+bar-volume-foreground-4 = #55aa55
+bar-volume-foreground-5 = #f5a70a
+bar-volume-foreground-6 = #ff5555
+bar-volume-gradient = false
+bar-volume-indicator = |
+bar-volume-indicator-font = 2
+bar-volume-fill = ─
+bar-volume-fill-font = 2
+bar-volume-empty = ─
+bar-volume-empty-font = 2
+bar-volume-empty-foreground = ${colors.foreground-alt}
+
+[module/battery]
+type = internal/battery
+poll-interval = 1
+full-at = 95
+
+label-discharging = %percentage%%
+label-charging = %percentage%%
+label-full = %percentage%%
+
+format-discharging = <ramp-capacity> <label-discharging>
+
+format-full-foreground = #00ff00
+format-full = <ramp-capacity> <label-full>
+
+format-charging-foreground = ${colors.color6}
+format-charging = <animation-charging> <label-charging>
+
+ramp-capacity-0 = 
+ramp-capacity-1 = 
+ramp-capacity-2 = 
+ramp-capacity-3 = 
+ramp-capacity-4 = 
+
+animation-charging-0 = 
+animation-charging-1 = 
+animation-charging-2 = 
+animation-charging-3 = 
+animation-charging-framerate = 600
+
+[module/wifi]
+type = internal/network
+interface = wlo1
+interval = 3
+
+format-connected = <label-connected>
+format-disconnected = <label-disconnected>
+
+label-connected =  %essid%
+label-connected-foreground = #00ff00
+
+label-disconnected = Not Connected
+label-disconnected-foreground = #ff0000
+
+[module/backlight]
+type = internal/backlight
+card = intel_backlight
+format = <label>
+label =  %percentage%%
+
+[module/i3]
+type = internal/i3
+
+pin-workspaces = true
+strip-wsnumbers = true
+index-sort = true
+
+ws-icon-0 = 1;
+ws-icon-1 = 2;
+ws-icon-2 = 3;
+ws-icon-3 = 4;
+ws-icon-default = 
+
+format = <label-state>
+label-focused = %icon%
+label-unfocused = %icon%
+label-occupied = %icon%
+label-urgent = %icon%
+
+label-occupied-padding = 2
+label-urgent-padding = 2
+label-focused-padding = 2
+label-unfocused-padding = 2
+
+label-focused-foreground = ${colors.color6}
+label-unfocused-foreground = #afafaf
+label-urgent-foreground = ${colors.alert}
+label-occupied-foreground = #ffffff
+
+label-focused-underline = ${colors.color6}
+label-urgent-underline = ${colors.alert}
+label-occupied-underline = #ffffff
+
+[module/spotify]
+type = custom/script
+exec = ~/.config/polybar/spotify
+exec-if = pgrep -x spotify
+interval = 2
+
+label =  %output:0:100:%
+format-padding = 1
+
+click-left = dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.PlayPause
+double-click-left = dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Previous
+click-right = dbus-send --print-reply --dest=org.mpris.MediaPlayer2.spotify /org/mpris/MediaPlayer2 org.mpris.MediaPlayer2.Player.Next
+
+[module/powermenu]
+type = custom/text
+content = 
+content-padding = 2
+;content-background = {}
+click-left = ~/.config/polybar/power-menu
+click-right = ~/.config/polybar/power-menu
+
+
+
+
+
+
+
+
+
+
+
+
+
+
