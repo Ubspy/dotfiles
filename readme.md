@@ -58,6 +58,10 @@
 ### File manager
 - Install the `thunar thunar-volman gvfs tumbler` packages
 - That's literally it
+### Polybar
+- Install `polybar-git` from the AUR
+- Install `otf-font-awesome` from pacman
+- Configuring is lots of "fun"
 
 ## TODO List
 - [ ] Get better cursor theme
