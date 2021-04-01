@@ -105,9 +105,16 @@ You need to change these values in both the gtk.css and the gtk-dark.css file. A
 - [x] Power Management
 - [ ] Get Fn lock to work
 
-gtk theme: Matcha-dark-alix
+gtk theme (window border): Matcha-dark-aliz
+
+gtk theme (actual gtk+): Snow-alien (modified)
+
 vs-code syntax theme: seti
+
 icon theme: numix
+
 file manager: thunar
+
 mouse cursor: openzone
+
 dm: lightdm
