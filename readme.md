@@ -18,6 +18,20 @@ rgba(105, 116, 103  -> rgba(164,22,2
 ```
 You need to change these values in both the gtk.css and the gtk-dark.css file. Also I intentionally left the last argument of `rbga` off, because you want to replace the color at whatever transparency.
 
+### Tmp Theme
+I'm using the `Arc-DARKEST` theme, but I modified the colors to match my wallpaper. Incase I have to do this in the future, here is how I did that. This theme uses a gresource file, so you need the `gdm` package to extract the internal gtk css files:
+```
+gresource extract gtk.gresource /org/gnome/arc-theme/gtk-main-dark.css > gtk.css
+gresource extract gtk.gresource /org/gnome/arc-theme/gtk-main-dark.css > gtk-dark.css
+```
+
+This will replace the the files referencing the `.gresource` file with the actual css stored in there. You can then go into those files and replace the following string patterns:
+```css
+#2285e2             -> #a50100
+rgba(34, 133, 226   -> rgba(165, 1, 0
+```
+You need to change these values in both the gtk.css and the gtk-dark.css file. Also I intentionally left the last argument of `rbga` off, because you want to replace the color at whatever transparency.
+
 ### Get wireless working
 - Install `wireless_tools iw wpa_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
 - Connect to a network using `nmtui`
