@@ -33,8 +33,8 @@ rgba(34, 133, 226   -> rgba(165, 1, 0
 You need to change these values in both the gtk.css and the gtk-dark.css file. Also I intentionally left the last argument of `rbga` off, because you want to replace the color at whatever transparency.
 
 ### Get wireless working
-- Install `wireless_tools iw wpa_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
-- Connect to a network using `nmtui`
+- Install `wpa_supplicant networkmanager nm-applet` packages and enable the service by using the command `systemctl enable networkmanager.service` and `systemctl enable wpa_supplicant.service`
+- You'll connect to networks using `nm-applet`
 
 ### Install AUR Packages
 - Install `git` package if you don't somehow already have it
@@ -42,14 +42,14 @@ You need to change these values in both the gtk.css and the gtk-dark.css file. A
 
 ### Getting the XServer working
 - Install `xorg xorg-xinit` to have a display server and also start the display server using `startx`
-- Install `i3-gaps` package so you have a GUI interface
+- Install `xfce4` package so you have a GUI interface
 
 ### Selecting mirror list
 - Go to the [Arch Mirror List Generator](https://www.archlinux.org/mirrorlist/) to get a mirror list that doesn't download at 4 bits a second. Don't forget to uncomment the mirrors.
 - If you wanna be extra epic, you can [sort the mirrors by speed](https://wiki.archlinux.org/index.php/mirrors#List_by_speed)
 
 ### Getting terminal
-- Install `termite` for the terminal
+- Install `alacritty` for the terminal
 - Install [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) and [Powerline Fonts](https://github.com/powerline/fonts) so it looks right (my personal favorite oh-my-zsh theme is 'fino')
 
 ### Getting display manager
@@ -64,68 +64,71 @@ You need to change these values in both the gtk.css and the gtk-dark.css file. A
 ### Set Wallpaper
 - Install `feh` package and set it to run on login in your i3 config file
 
-### Compositor
-- You'll notice the screen has some tearing, and there's no transparency, this is why we install a composite manager
-- Install `compton-tyrone-git` from the AUR since it has blur
-- To get the config working correctly, do a lot of googling, my config file is a good start
-
-### Color themes
-- Install `python-pywal` package and run `wal -i /path/to/image` to set the image that dictates the color themes
-
-### Get locker
-- Install `i3lock-color-git` from AUR
-- Install `i3lock-fancy-git` from AUR and edit the script file so the opacity looks acceptable
-- I had to change the opacity so it wasn't completly dark, that was on like the 4th line `hue=(-level "0%,100%,1")` the last number in there is the opacity, by default it's 0.6
-
-### Set sleep functionality
-- Edit the `/etc/systemd/logind.conf` file and set the appropriate parameters (mine should be in this repo)
-- To sleep on inactivity, I tried using the systemd functionality but nothing happened, so I used the `xautolock` package to do this, it runs in the i3 config
-
-### Get computer to lock on sleep
-- Make a service in systemd (attached in dotfiles) to handle locking on suspend
-- The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
-- Important note: if you're using `suspend-then-hibernate` then you probably want to set the hibernate time because the default is three hours, to do that edit the `HibernateDelaySec` line in the `/etc/systemd/sleep.conf` file
-- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB_CMDLINE_LINUX_DEFAULT` (this is for grub only, I switched from grub and I'm too afraid to delete it)
-
 ### Application launcher
-- Install `rofi` package, and the `papirus-icon-theme` for the icons
-- The config file only edits a few things, the icons and the color theme (which is generated with pywal)
-- If you want to edit the color theme of rofi, edit the `~/.config/wal/templates/colors-rofi-dark.rasi` file, and rerun pywal using `wal -R`
+- Install `ulauncher` package
 
-### Power management
-- Install the `tlp tlp-rdw` packages
-- Enable the tlp service `systemctl enable tlp` and `systemctl enable tlp-sleep`
-- Some laptops require additional packages for tlp: `tp_smapi acpi_call`
+## Gaming virtual machine setup
+### Install the packages
+First you want to get the following packages: `virt-manager qemu`.
 
-### File manager
-- Install the `thunar thunar-volman gvfs tumbler` packages
-- That's literally it
+### Set up IOMMU
+IOMMU is what we will be using to isolate the gpu so we can pass it directly to the virtual machine.
+Add the following to your kernel parameters: `amd_iommu=on iommu=pt` (for grub, edit the `/etc/default/grub` file and remake the config), you'll need to reboot for this to take affect.
+Run the following command to make sure that iommu is properly enabled: `dmesg | grep -i -e DMAR -e IOMMU`.
 
-### Polybar
-- Install `polybar-git` from the AUR
-- Install `otf-font-awesome` from pacman
-- Configuring is lots of "fun"
+### Find the iommu group for your gpu
+This script will list the iommu groups you have, as well as the device ids. You want to find the ids for your gpu, as well as everything inside that group. To pass something into a vm, you need to pass in the entire group, you can't just pass in a single device.
+```bash
+#!/bin/bash
+shopt -s nullglob
+for g in `find /sys/kernel/iommu_groups/* -maxdepth 0 -type d | sort -V`; do
+    echo "IOMMU Group ${g##*/}:"
+    for d in $g/devices/*; do
+        echo -e "\t$(lspci -nns ${d##*/})"
+    done;
+done;
+```
 
-## TODO List
-- [ ] Get better cursor theme
-- [x] Get user icon and set it in lightdm
-- [ ] Get a better status bar
-- [x] Get a better application launcher
-- [ ] Get better gtk theme
-- [x] Put new config files into repo 
-- [x] Find a way to lock the computer
-- [ ] Make install script
-- [ ] Get programs to autostart on login
-- [x] Power Management
-- [ ] Get Fn lock to work
+### Isolating the gpu on boot
+I'm currently not doing this, but you follow [this section from the arch wiki](https://wiki.archlinux.org/title/PCI_passthrough_via_OVMF#Isolating_the_GPU).
+You need two graphics devices for this, my current setup has one so move onto the next section.
+
+### Setting up libvirt hooks for single gpu
+I could write a guide here, but it's all perfectly laid out in [this github page](https://github.com/joeknock90/Single-GPU-Passthrough).
+
+### Downloading the images
+You need two iso files for this, first you'll need the Windows 10 iso, and you'll also need the [virtio drivers](https://github.com/virtio-win/virtio-win-pkg-scripts/blob/master/README.md).
+
+### Setting up the vm
+You'll want to pick install from iso, and then select your windows 10 iso (I'd recommend setting up your own directory for images for virt-manager).
+Give the machine as much RAM as you think is necessary, but be sure to only give it a single cpu.
+Create a disk, and you can leave everything else default, but be sure to select edit before installing.
+
+Once you're in the big menu, you'll want to delete a few things: the tablet, display spice, console, channel spice, video QXL, and both USB redirectors.
+Next, go to the CPU settings, set it to copy host CPU information, and manually edit the topology, set two threads and however many cores you want to give it (one socket, obviously).
+
+Then go to boot options and set the `SATA CDROM 1` and the virtual disk to be the boot devices. Go to the virtual disk you're installing on and set the mode to `VirtIO` instead of `SATA`, it's much faster. Then go to the advanced and change the cache mdoe to `writeback`, it's the fastest.
+
+If you're like me, you have your games on a hard drive, you can add another storage device with the same settings, but set it to the location of the `/dev/` in the file path.
+
+Next, you want to add another storage for your virtio drivers. It'll be a CD ROM, but speed doesn't matter so don't bother with the cache mode.
+
+Finally, add all the PCI devices for everything in your GPU IOMMU group, as well as any USB devices you'll need (mouse, keyboard, headphones, etc).
+
+### On boot
+When you boot up, you'll need to install the virtio drivers to install it on the virtio virtual disk. Then you can install Windows 10 on the virtio virtual disk.
+Once it's installed, install the virtio network drivers and windows will take care of the rest. Now you have a working gaming vm!
+
+### If you're using wifi
+If you're using wifi with a single gpu, you'll want to follow [this guide](https://ubuntu.forumming.com/question/9718/stay-connected-to-wifi-when-all-users-log-out) to keep the wifi going even when you're logged out.
 
 gtk theme (window border): Matcha-dark-aliz
 
-gtk theme (actual gtk+): Snow-alien (modified)
+gtk theme (actual gtk+): Arc-BLACKEST (modified)
 
 vs-code syntax theme: seti
 
-icon theme: numix
+icon theme: ePapirus
 
 file manager: thunar
 
