@@ -58,6 +58,10 @@ You need to change these values in both the gtk.css and the gtk-dark.css file. A
 - Change the picture in the directory `/usr/share/lightdm-webkit/themes/litarvan/img/background.xxxx.png` to change your background in the login
 - To change your user icon, put it in the `/var/lib/AccountsService/icons/` and change your user picture by editing the file in `/var/lib/AccountsService/users/[username]`
 
+### Set up amd gpu drivers
+- For some reason, the amd gpu drivers need to be loaded before the rest of the kernel, or else you'll have a bad time
+- In your `/etc/mkinitcpio.conf` file, add this to the `MODULES=()` line: `amdgpu radeon` 
+
 ### Visual Studio Code
 - Install `code` package to get visual studio code text editor
 
@@ -115,9 +119,58 @@ Next, you want to add another storage for your virtio drivers. It'll be a CD ROM
 
 Finally, add all the PCI devices for everything in your GPU IOMMU group, as well as any USB devices you'll need (mouse, keyboard, headphones, etc).
 
+### Hiding the virtualization from Windows
+Now you'll want to hide the fact that you're using a VM from windows, or else it will try to limit your usage of the operating system. Like NVIDIA won't let you install GPU drivers if windows says you're on a VM, so let's hide it.
+
+First you want to change your first line to look like this:
+```xml
+<domain xmlns:qemu="http://libvirt.org/schemas/domain/qemu/1.0" id="1" type="kvm">
+```
+
+This will set the xml schema for the rest of the file. Next, near the bottom of the file, this is the part that will actually hide the virtualization from the guest machine:
+```xml
+<qemu:commandline>
+    <qemu:arg value="-cpu"/>
+    <qemu:arg value="host,hv_time,kvm=off,hv_vendor_id=null,"/>
+</qemu:commandline>
+```
+
+### Passing through keyboard and mouse input
+We're going to be using evdev to pass through the keyboard and mouse input into the vm, while it still being captured on linux. Do to this, we need to find the event locations for `/dev/input/by-id/[device here]`. Find the name of your keyboard and mouse decive, and we'll add in some new args to the `qemu:commandline` section.
+
+Below the arguments for the cpu, add the following (change `MOUSE_NAME` and `KEYBOARD_NAME` for your device names):
+```xml
+<qemu:arg value='-object'/>
+<qemu:arg value='input-linux,id=mouse1,evdev=/dev/input/by-id/MOUSE_NAME'/>
+<qemu:arg value='-object'/>
+<qemu:arg value='input-linux,id=kbd1,evdev=/dev/input/by-id/KEYBOARD_NAME,grab_all=on,repeat=on'/>
+```
+
+This won't work on its own, you'll need to add some settings so you can read these as your user. Go into your qemu config file (mine is in `/etc/libvirt/qemu.conf`) and add this to the bottom of the file (change `MOUSE_NAME` and `KEYBOARD_NAME` for your device names):
+```bash
+cgroup_device_acl = [
+        "/dev/null", "/dev/full", "/dev/zero", 
+        "/dev/random", "/dev/urandom",
+        "/dev/ptmx", "/dev/kvm", "/dev/kqemu",
+        "/dev/rtc","/dev/hpet",
+        "/dev/input/by-id/KEYBOARD_NAME",
+        "/dev/input/by-id/MOUSE_NAME"
+]
+```
+
+Finally, you'll want to restart the libvirt service, and add your user to the `input` group so you have permission to read from those files:
+```
+sudo systemctl restart libvirtd
+sudo usermod -a -G input YOUR_USER
+```
+
+### Passthrough audio using Pulseaudio
+You'll want to pass through your audio in a similar fashion, it's pretty simple once you figure it out. The first thing you'll
+
 ### On boot
-When you boot up, you'll need to install the virtio drivers to install it on the virtio virtual disk. Then you can install Windows 10 on the virtio virtual disk.
-Once it's installed, install the virtio network drivers and windows will take care of the rest. Now you have a working gaming vm!
+When you boot up, you'll need to install the virtio drivers to install it on the virtio virtual disk. Under custom install, select the driver in the `cd drive:\viostor\w10\amd64`. Uou should then see your drives, and you can install Windows 10 on the virtio virtual disk.
+
+Once it's installed, install the virtio network drivers under `cd drive:\NetKVM\w10\amd64` and windows will take care of the rest. Now you have a working gaming vm!
 
 ### If you're using wifi
 If you're using wifi with a single gpu, you'll want to follow [this guide](https://ubuntu.forumming.com/question/9718/stay-connected-to-wifi-when-all-users-log-out) to keep the wifi going even when you're logged out.
