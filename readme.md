@@ -1,24 +1,35 @@
+# During Install
+- During the `pacstrap` install, I would also install `base-devel`, since that will allow you to build aur packages. In addition, I would also install `git, dhcpcd, zsh`, since these will end up needing to be installed later anyways
+
 # Post Install Guide (this part is more for me specifically, but if you wanna read it go ahead)
 ### Installing a bootloader
-- Install the `refind-efi` package from pacman
+- Install the `refind` package from pacman
 - Run the command `refind-install`
+- Make sure the config file generated has only the "Boot with minimal options" line, other lines generated are for the USB, and will result in a boot fail.
 - To make it look decent, install [a theme](https://github.com/bobafetthotmail/refind-theme-regular) using the command `sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/bobafetthotmail/refind-theme-regular/master/install.sh)"`
 ### Adding a new user
-- Add new user using `useradd -m -G [group] -s [shell for user] [username]`
+- Add new user using `useradd -m -G [group] -s [shell for user] [username]
+- I recommend adding them to the *wheel* group, and editing the 
 ### Get wireless working
 - Install `wireless_tools iw wpa_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
 - Connect to a network using `nmtui`
+- If using a DE, there are definitely ways to integrate wpa_supplicant and networkmanager into the DE, but I haven't had to mess with that yet.
 ### Install AUR Packages
-- Install `git` package if you don't somehow already have it
-- `git clone https://github.com/trizen/trizen` and install it by `cd trizen; makepkg -si`
+- Install `git` package if you don't already have it
+- `git clone https://aur.archlinux.org/paru.git` and install it by `cd paru; makepkg -si`
 ### Getting the XServer working
 - Install `xorg xorg-xinit` to have a display server and also start the display server using `startx`
-- Install `i3-gaps` package so you have a GUI interface
+- Install `plasma-desktop`, this will install KDE without all the extra bloat
+- Edit the `.xinitrc` file in your home directory, and add type in these lines:
+```
+export DESKTOP_SESSION=plasma
+exec startplasma-x11
+```
 ### Selecting mirror list
 - Go to the [Arch Mirror List Generator](https://www.archlinux.org/mirrorlist/) to get a mirror list that doesn't download at 4 bits a second. Don't forget to uncomment the mirrors.
 - If you wanna be extra epic, you can [sort the mirrors by speed](https://wiki.archlinux.org/index.php/mirrors#List_by_speed)
 ### Getting terminal
-- Install `termite` for the terminal
+- Install `kitty` for the terminal
 - Install [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) and [Powerline Fonts](https://github.com/powerline/fonts) so it looks right (my personal favorite oh-my-zsh theme is 'fino')
 ### Getting display manager
 - Install `lightdm lightdm-webkit2-greeter` packages for the display manager, install the [Litarvan](https://github.com/Litarvan/lightdm-webkit-theme-litarvan) theme cause it's amazing
