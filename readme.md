@@ -11,7 +11,7 @@
 - Add new user using `useradd -m -G [group] -s [shell for user] [username]
 - I recommend adding them to the *wheel* group, and editing the 
 ### Get wireless working
-- Install `wireless_tools iw wpa_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
+- Install `wireless\_tools iw wpa\_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
 - Connect to a network using `nmtui`
 - If using a DE, there are definitely ways to integrate wpa_supplicant and networkmanager into the DE, but I haven't had to mess with that yet.
 ### Install AUR Packages
@@ -57,7 +57,7 @@ exec startplasma-x11
 - Make a service in systemd (attached in dotfiles) to handle locking on suspend
 - The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
 - Important note: if you're using `suspend-then-hibernate` then you probably want to set the hibernate time because the default is three hours, to do that edit the `HibernateDelaySec` line in the `/etc/systemd/sleep.conf` file
-- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB_CMDLINE_LINUX_DEFAULT` (this is for grub only, I switched from grub and I'm too afraid to delete it)
+- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB\_CMDLINE\_LINUX\_DEFAULT` (this is for grub only, I switched from grub and I'm too afraid to delete it)
 ### Application launcher
 - Install `rofi` package, and the `papirus-icon-theme` for the icons
 - The config file only edits a few things, the icons and the color theme (which is generated with pywal)
@@ -65,7 +65,7 @@ exec startplasma-x11
 ### Power management
 - Install the `tlp tlp-rdw` packages
 - Enable the tlp service `systemctl enable tlp` and `systemctl enable tlp-sleep`
-- Some laptops require additional packages for tlp: `tp_smapi acpi_call`
+- Some laptops require additional packages for tlp: `tp\_smapi acpi\_call`
 ### File manager
 - Install the `thunar thunar-volman gvfs tumbler` packages
 - That's literally it
