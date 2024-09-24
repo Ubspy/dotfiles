@@ -14,6 +14,8 @@
 - Install `wireless\_tools iw wpa\_supplicant networkmanager` packages and enable the service by using the command `systemctl enable networkmanager.service`
 - Connect to a network using `nmtui`
 - If using a DE, there are definitely ways to integrate wpa_supplicant and networkmanager into the DE, but I haven't had to mess with that yet.
+### Blutooth
+- Install `bluez bluez-utils bluedevil`, and start/enable `bluetooth.service`, you may need to restart. This will get bluetooth working through the KDE settings panel
 ### Install AUR Packages
 - Install `git` package if you don't already have it
 - `git clone https://aur.archlinux.org/paru.git` and install it by `cd paru; makepkg -si`
@@ -25,12 +27,24 @@
 export DESKTOP_SESSION=plasma
 exec startplasma-x11
 ```
+### Keyboard
+- I had a problem with my keyboard where it wasn't properly registering the function keys. This is because it assumed FN lock was on. To fix this, edit `/sys/module/hid\_apple/parameters/fnmode` and set it to zero.
+- I would have to do this after every reboot,
 ### Selecting mirror list
 - Go to the [Arch Mirror List Generator](https://www.archlinux.org/mirrorlist/) to get a mirror list that doesn't download at 4 bits a second. Don't forget to uncomment the mirrors.
 - If you wanna be extra epic, you can [sort the mirrors by speed](https://wiki.archlinux.org/index.php/mirrors#List_by_speed)
 ### Getting terminal
 - Install `kitty` for the terminal
 - Install [Oh My Zsh](https://github.com/robbyrussell/oh-my-zsh) and [Powerline Fonts](https://github.com/powerline/fonts) so it looks right (my personal favorite oh-my-zsh theme is 'fino')
+### Audio
+- Install the following packages: `pipewire pipewire-alsa pipewire-jack pipewire-pulse` to get the Pipewire audio working. Pipewire-pulse helps replease the pulseaudio framework with the imroved Pipewire.
+- Install `pwvucontrol` from the AUR to be able to control your audio from a GUI.
+### Steam
+- Install steam to play games, first you need to enable the **multilib** repo so you can install steam. To do so, edit `/etc/pacman.conf`, and uncomment the lines surrounding `[multilib]`
+- Once that's installed, you want to make sure to enable **Proton**, this will allow you play games not compiled for linux, on linux. Thank you Valve. Go to your `Steam Settings > Combatability` and check the box that says `Enable Steam Play for all other titles`
+- I'd recommend keeping the default Proton version to be the most recent, that isn't the experimental version.
+- There's a community package of Proton that has a bunch of bug fixes that will sometimes be worth trying, it's called **Proton GE**. It's worth trying on a game that might be a bit picky. It's availible on the aur as `proton-ge-custom-bin`
+- When trying to get a game to run, check [ProtonDB](https://www.protondb.com/) to see how easy the game is to get to run, as well as what versions of Proton and what launch arguments people used to get their games working
 ### Getting display manager
 - Install `lightdm lightdm-webkit2-greeter` packages for the display manager, install the [Litarvan](https://github.com/Litarvan/lightdm-webkit-theme-litarvan) theme cause it's amazing
 - Set the right greeter for lightdm and the right theme for the webkit2 greeter
@@ -93,3 +107,10 @@ icon theme: numix
 file manager: thunar
 mouse cursor: openzone
 dm: lightdm
+
+
+## Virtual machine notes
+- Also install `libvirtd` and start/enable the `libvirtd.service`
+- I needed to create a new disk after the VM creation to set it to VirtIO
+- I needed to run `sudo virsh net-audostart default` to get it to autostart the default network on boot
+- Don't remove any of the spice stuff or the tablet if you're not doing any VFIO or GPU passthrough, because that's how we see it without a direct GPU passthrough. Likewise, since we are using Spice, we don't need to pass the USB devices through either
