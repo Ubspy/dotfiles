@@ -27,6 +27,15 @@
 export DESKTOP_SESSION=plasma
 exec startplasma-x11
 ```
+### Wayland alternative
+- KDE Plasma as of 6.0 comes with X11 and Wayland, I recommend Wayland as it has a more updated codebase. However, there are some reasons to stick to X11 still. Check out (this link)[https://old.reddit.com/r/linux_gaming//wiki/faq#wiki_wayland_or_xorg.3F] for more information on which to use.
+- To run KDE, make a script in your home folder and paste the following commands:
+```
+#!/bin/bash
+/usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland
+```
+- If you have an NVIDIA card, you'll need to start linux with the following kernel parameter: `nvidia-drm.modeset=1`.
+- For this setup, add that at the end of the **"Boot with minimal options"** line in `/boot/refind\_linux.conf` file.
 ### Keyboard
 - I had a problem with my keyboard where it wasn't properly registering the function keys. This is because it assumed FN lock was on. To fix this, edit `/sys/module/hid\_apple/parameters/fnmode` and set it to zero.
 - I would have to do this after every reboot,
