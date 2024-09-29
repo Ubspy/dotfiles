@@ -21,7 +21,7 @@
 - `git clone https://aur.archlinux.org/paru.git` and install it by `cd paru; makepkg -si`
 ### Getting the XServer working
 - Install `xorg xorg-xinit` to have a display server and also start the display server using `startx`
-- Install `plasma-desktop`, this will install KDE without all the extra bloat
+- Install `plasma-desktop kscreen`, this will install KDE without all the extra bloat
 - Edit the `.xinitrc` file in your home directory, and add type in these lines:
 ```
 export DESKTOP_SESSION=plasma
