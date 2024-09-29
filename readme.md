@@ -54,6 +54,10 @@ exec startplasma-x11
 - I'd recommend keeping the default Proton version to be the most recent, that isn't the experimental version.
 - There's a community package of Proton that has a bunch of bug fixes that will sometimes be worth trying, it's called **Proton GE**. It's worth trying on a game that might be a bit picky. It's availible on the aur as `proton-ge-custom-bin`
 - When trying to get a game to run, check [ProtonDB](https://www.protondb.com/) to see how easy the game is to get to run, as well as what versions of Proton and what launch arguments people used to get their games working
+### Screenshots
+- To take screenshots, I like to use a program called `flameshot`
+- Currently, the arch package for flameshot is behind, and doesn't support fractional scaling well, so I built it from source via their [GitHub repo](https://github.com/flameshot-org/flameshot)
+- For future refrence, uninstalling flameshot simply requires removing all the files listed when installing via the `cmake --install build` command, for me flameshot is the only thing (at the time of install) using the `/usr/local/share` folder, so I can delete the whole folder, make very sure that's the only thing before you delete the root install directory though
 ### Getting display manager
 - Install `lightdm lightdm-webkit2-greeter` packages for the display manager, install the [Litarvan](https://github.com/Litarvan/lightdm-webkit-theme-litarvan) theme cause it's amazing
 - Set the right greeter for lightdm and the right theme for the webkit2 greeter
