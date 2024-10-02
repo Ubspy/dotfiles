@@ -63,6 +63,11 @@ exec startplasma-x11
 - Set the right greeter for lightdm and the right theme for the webkit2 greeter
 - Change the picture in the directory `/usr/share/lightdm-webkit/themes/litarvan/img/background.xxxx.png` to change your background in the login
 - To change your user icon, put it in the `/var/lib/AccountsService/icons/` and change your user picture by editing the file in `/var/lib/AccountsService/users/[username]`
+- One thing I've noticed is on Wayland, after resuming from sleep my KDE is completely borked. To fix this, the `nvidia-resume` service needs to be enabled/started.
+- Additionally, copy the following to the `/etc/modprobe.d/nvidia-power-management.conf` file:
+```
+options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_TemporaryFilePath=/var/tmp
+```
 ### Visual Studio Code
 - Install `code` package to get visual studio code text editor
 ### Set Wallpaper
