@@ -58,6 +58,7 @@ exec startplasma-x11
 - To take screenshots, I like to use a program called `flameshot`
 - Currently, the arch package for flameshot is behind, and doesn't support fractional scaling well, so I built it from source via their [GitHub repo](https://github.com/flameshot-org/flameshot)
 - For future refrence, uninstalling flameshot simply requires removing all the files listed when installing via the `cmake --install build` command, for me flameshot is the only thing (at the time of install) using the `/usr/local/share` folder, so I can delete the whole folder, make very sure that's the only thing before you delete the root install directory though
+- Update on the above: the scaling problem is now happening on build from source, so I just went back to the arch repo install, and am dealing with it until it's fixed.
 ### Getting display manager
 - Install `lightdm lightdm-webkit2-greeter` packages for the display manager, install the [Litarvan](https://github.com/Litarvan/lightdm-webkit-theme-litarvan) theme cause it's amazing
 - Set the right greeter for lightdm and the right theme for the webkit2 greeter
