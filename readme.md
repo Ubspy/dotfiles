@@ -127,6 +127,13 @@ file manager: thunar
 mouse cursor: openzone
 dm: lightdm
 
+## KDE Theming
+- Colors: Materia Dark (#f28241)
+- Window Decorations: Utterly-Round-Dark-Solid
+- Cursor: Colloid
+- Icons: Papirus
+- Splash Screen: Simple Arch
+- Some of these needed to be installed with the `osc-url` package from the AUR
 
 ## Virtual machine notes
 - Also install `libvirtd` and start/enable the `libvirtd.service`
