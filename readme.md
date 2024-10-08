@@ -134,6 +134,7 @@ dm: lightdm
 - Icons: Papirus
 - Splash Screen: Simple Arch
 - Some of these needed to be installed with the `osc-url` package from the AUR
+- For the panels, I added the `Desktop Indicator` and `Window Title`
 
 ## Virtual machine notes
 - Also install `libvirtd` and start/enable the `libvirtd.service`
