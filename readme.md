@@ -38,7 +38,10 @@ exec startplasma-x11
 - For this setup, add that at the end of the **"Boot with minimal options"** line in `/boot/refind\_linux.conf` file.
 ### Keyboard
 - I had a problem with my keyboard where it wasn't properly registering the function keys. This is because it assumed FN lock was on. To fix this, edit `/sys/module/hid\_apple/parameters/fnmode` and set it to zero.
-- I would have to do this after every reboot,
+- To fix this, create a file at `/etc/modprobe.d/hid\_apple` and copy the following:
+```
+options hid_apple fnmode=0
+```
 ### Selecting mirror list
 - Go to the [Arch Mirror List Generator](https://www.archlinux.org/mirrorlist/) to get a mirror list that doesn't download at 4 bits a second. Don't forget to uncomment the mirrors.
 - If you wanna be extra epic, you can [sort the mirrors by speed](https://wiki.archlinux.org/index.php/mirrors#List_by_speed)
@@ -69,56 +72,24 @@ exec startplasma-x11
 ```
 options nvidia NVreg_PreserveVideoMemoryAllocations=1 NVreg_TemporaryFilePath=/var/tmp
 ```
-### Visual Studio Code
-- Install `code` package to get visual studio code text editor
-### Set Wallpaper
-- Install `feh` package and set it to run on login in your i3 config file
-### Compositor
-- You'll notice the screen has some tearing, and there's no transparency, this is why we install a composite manager
-- Install `compton-tyrone-git` from the AUR since it has blur
-- To get the config working correctly, do a lot of googling, my config file is a good start
-### Color themes
-- Install `python-pywal` package and run `wal -i /path/to/image` to set the image that dictates the color themes
-### Get locker
-- Install `i3lock-color-git` from AUR
-- Install `i3lock-fancy-git` from AUR and edit the script file so the opacity looks acceptable
-- I had to change the opacity so it wasn't completly dark, that was on like the 4th line `hue=(-level "0%,100%,1")` the last number in there is the opacity, by default it's 0.6
-### Set sleep functionality
-- Edit the `/etc/systemd/logind.conf` file and set the appropriate parameters (mine should be in this repo)
-- To sleep on inactivity, I tried using the systemd functionality but nothing happened, so I used the `xautolock` package to do this, it runs in the i3 config
-### Get computer to lock on sleep
-- Make a service in systemd (attached in dotfiles) to handle locking on suspend
-- The service in the dotfiles is set up so you can activate them for different users, you just need to specify when activating the service with `systemctl enable i3lock@user.service`
-- Important note: if you're using `suspend-then-hibernate` then you probably want to set the hibernate time because the default is three hours, to do that edit the `HibernateDelaySec` line in the `/etc/systemd/sleep.conf` file
-- You'll also want to set a kernel parameter for resuming, to do that edit the `/etc/default/grub` file and add `resume=[swap partition]` at the end of the string on the line starting with `GRUB\_CMDLINE\_LINUX\_DEFAULT` (this is for grub only, I switched from grub and I'm too afraid to delete it)
 ### Application launcher
 - Install `rofi` package, and the `papirus-icon-theme` for the icons
 - The config file only edits a few things, the icons and the color theme (which is generated with pywal)
 - If you want to edit the color theme of rofi, edit the `~/.config/wal/templates/colors-rofi-dark.rasi` file, and rerun pywal using `wal -R`
-### Power management
-- Install the `tlp tlp-rdw` packages
-- Enable the tlp service `systemctl enable tlp` and `systemctl enable tlp-sleep`
-- Some laptops require additional packages for tlp: `tp\_smapi acpi\_call`
-### File manager
-- Install the `thunar thunar-volman gvfs tumbler` packages
-- That's literally it
-### Polybar
-- Install `polybar-git` from the AUR
-- Install `otf-font-awesome` from pacman
-- Configuring is lots of "fun"
 
 ## TODO List
-- [ ] Get better cursor theme
+- [x] Get better cursor theme
 - [x] Get user icon and set it in lightdm
-- [ ] Get a better status bar
+- [X] Get a better status bar
 - [x] Get a better application launcher
-- [ ] Get better gtk theme
+- [X] Get better gtk theme
 - [x] Put new config files into repo 
 - [x] Find a way to lock the computer
 - [ ] Make install script
 - [ ] Get programs to autostart on login
 - [x] Power Management
-- [ ] Get Fn lock to work
+- [X] Get Fn lock to work
+- [ ] Nvidia Resume
 
 gtk theme: Matcha-dark-alix
 vs-code syntax theme: seti
