@@ -119,3 +119,10 @@ Unrelated to my Arch setup, I wanted to document steps for myself on things I mi
 - Proxmox enterprise sources need to be commented out in /etc/apt/sources.list.d/*
 - Fans are a bit much, currently they're idling around 30%, I am seeing that the HD controller is at 80C without the server being closed. However, closing the server (putting the lid on) lowered it to 56C
 - DNS server doesn't play with NordVPN without meshnet, install nordvpn on the DNS server, and on both the host and the DNS server, run `nordvpn set meshnet enabled`, and check the meshnet IP of the DNS server. On your machine, run `nordvpn set dns [DNS-mesh-ip]`
+
+
+
+
+
+# Neovim installed packages
+- Telescope: `ripgrep, fd`
