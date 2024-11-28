@@ -1,4 +1,5 @@
-require("config.lazy")
-require("config.remap")
 require("config.colors")
+require("config.lazy")
+require("config.lsp")
+require("config.remap")
 require("config.treesitter")
