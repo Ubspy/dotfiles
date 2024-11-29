@@ -44,6 +44,7 @@ cmp.setup({
 -- Configure LSPs
 local lspconfig = require('lspconfig')
 lspconfig.clangd.setup{}
+lspconfig.texlab.setup{}
 
 -- Github pages for plugins:
 -- https://github.com/hrsh7th/nvim-cmp
