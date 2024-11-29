@@ -1,0 +1,10 @@
+# Ignore everything in the repo
+/*
+
+# Now we unignore the config folders we actually want
+!.gitignore
+!/nvim/
+!/nvim/**
+
+# Ignore lazy-lock
+lazy-lock.json
