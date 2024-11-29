@@ -3,6 +3,7 @@
 
 # Now we unignore the config folders we actually want
 !.gitignore
+!readme.md
 !/nvim/
 !/nvim/**
 
