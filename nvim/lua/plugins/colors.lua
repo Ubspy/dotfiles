@@ -1,6 +1,6 @@
 return {
 	{
-		"tiagovla/tokyodark.nvmi",
+		"tiagovla/tokyodark.nvim",
 		lazy = true,
 		url = "https://github.com/tiagovla/tokyodark.nvim"
 	},	
