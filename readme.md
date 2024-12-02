@@ -127,6 +127,7 @@ dm: lightdm
 
 # Neovim installed packages
 - Telescope: `ripgrep, fd`
+- Copy to clipboard: `xclip`
 
 # Misc
 ## Fusion 360
