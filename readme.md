@@ -140,3 +140,6 @@ dm: lightdm
 ## Minecraft
 - I use the `prismlauncher` arch package to run Minecraft.
 - Some modpacks, the sound was incredibly messed up for me. I had to go to `Settings > Minecraft > Tweaks > Use system installation of OpenAL`.
+
+# Neovim packages to consider
+- Todo comment highlighter: https://github.com/folke/todo-comments.nvim
