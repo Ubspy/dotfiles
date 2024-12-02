@@ -130,9 +130,6 @@ dm: lightdm
 - Copy to clipboard: `xclip`
 - Latex compilation: `texlive-latexrecommended texlive-latexextra rubber`
 
-# Neovim packages to consider
-- Todo comment highlighter: https://github.com/folke/todo-comments.nvim
-
 # Misc
 ## Fusion 360
 - Packages required: `sudo pacman -S curl lsb_release glxinfo wget pkexec wget xdg-open 7z cabextract samba bc`
