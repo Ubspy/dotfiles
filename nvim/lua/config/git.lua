@@ -1,5 +1,11 @@
 -- Adds git annotations for when things change
-require('gitsigns').setup()
+require('gitsigns').setup({
+    on_attach = function(bufnr)
+        -- Create git bindings based off the remap config
+        local opts = { buffer = bufnr }
+        require('config.remap').git_keybinds(opts)
+    end
+})
 
 -- Default options
 -- require('gitsigns').setup {
