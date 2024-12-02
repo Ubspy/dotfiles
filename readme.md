@@ -126,3 +126,6 @@ Unrelated to my Arch setup, I wanted to document steps for myself on things I mi
 
 # Neovim installed packages
 - Telescope: `ripgrep, fd`
+
+# Neovim packages to consider
+- Todo comment highlighter: https://github.com/folke/todo-comments.nvim
