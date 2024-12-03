@@ -27,3 +27,8 @@ vim.cmd.colorscheme("onedark")
 -- Set default nvim background to transparent
 vim.api.nvim_set_hl(0, "Normal", { bg = "none" })
 vim.api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
+
+-- Set column at 80 characters
+vim.g.virtcolumn_char = '▕'
+vim.g.virtcolumn_priority = 10
+vim.wo.colorcolumn = '81'
