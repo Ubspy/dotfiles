@@ -128,6 +128,7 @@ dm: lightdm
 # Neovim installed packages
 - Telescope: `ripgrep, fd`
 - Copy to clipboard: `xclip`
+- Latex compilation: `texlive-latexrecommended texlive-latexextra rubber`
 
 # Misc
 ## Fusion 360

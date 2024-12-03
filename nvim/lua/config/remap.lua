@@ -1,5 +1,6 @@
 local builtin = require("telescope.builtin")
 local gitsigns = require('gitsigns')
+local knap = require('knap')
 
 vim.g.mapleader = " "
 
@@ -73,6 +74,23 @@ function export.git_keybinds(opts)
 	vim.keymap.set('n', '<leader>hD', function() gitsigns.diffthis('~1') end)
 	vim.keymap.set('n', '<leader>td', gitsigns.toggle_deleted)
 end
+
+-- Knap bindings
+vim.keymap.set('n', '<F5>', knap.process_once)
+vim.keymap.set('v', '<F5>', knap.process_once)
+vim.keymap.set('i', '<F5>', knap.process_once)
+
+vim.keymap.set('n', '<F6>', knap.close_viewer)
+vim.keymap.set('v', '<F6>', knap.close_viewer)
+vim.keymap.set('i', '<F6>', knap.close_viewer)
+
+vim.keymap.set('n', '<F7>', knap.toggle_autopreviewing)
+vim.keymap.set('v', '<F7>', knap.toggle_autopreviewing)
+vim.keymap.set('i', '<F7>', knap.toggle_autopreviewing)
+
+vim.keymap.set('n', '<F8>', knap.forward_jump)
+vim.keymap.set('v', '<F8>', knap.forward_jump)
+vim.keymap.set('i', '<F8>', knap.forward_jump)
 
 -- Return export so the LSP file has access to this function
 return export

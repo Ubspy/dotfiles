@@ -5,11 +5,14 @@ require("config.lazy")
 require("config.colors")
 require("config.comments")
 require("config.git")
+require("config.knap")
 require("config.lsp")
 require("config.lualine")
-require("config.remap")
 require("config.telescope")
 require("config.treesitter")
+
+-- Do this one last
+require("config.remap")
 
 -- Add extra space to align tabs
 vim.bo.expandtab = true
