@@ -2,6 +2,7 @@ local cmp = require('cmp')
 local knap = require('knap')
 local gitsigns = require('gitsigns')
 local builtin = require("telescope.builtin")
+local knap = require('knap')
 
 vim.g.mapleader = " "
 
