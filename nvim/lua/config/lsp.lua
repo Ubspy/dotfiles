@@ -38,7 +38,8 @@ cmp.setup({
 			vim.snippet.expand(args.body)
 		end,
 	},
-	mapping = cmp.mapping.preset.insert({}),
+	-- Set keybinds according to what we have in our remap for cmp
+	mapping = cmp.mapping.preset.insert(require('config.remap').cmp_keybinds),
 })
 
 -- Configure LSPs

@@ -1,6 +1,7 @@
-local builtin = require("telescope.builtin")
-local gitsigns = require('gitsigns')
+local cmp = require('cmp')
 local knap = require('knap')
+local gitsigns = require('gitsigns')
+local builtin = require("telescope.builtin")
 
 vim.g.mapleader = " "
 
@@ -36,6 +37,9 @@ function export.lsp_keybinds(opts)
 	vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
 	vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
 end
+
+-- Array for cmp plugin keybinds
+export.cmp_keybinds = { ['<CR>'] = cmp.mapping.confirm({ select = true }) }
 
 function export.git_keybinds(opts)
 	-- Navigation next
