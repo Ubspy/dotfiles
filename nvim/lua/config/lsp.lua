@@ -27,19 +27,17 @@ vim.api.nvim_create_autocmd('LspAttach', {
 local cmp = require('cmp')
 
 cmp.setup({
-	sources = {
-		-- cmp-nvim-lsp
-		{ name = 'nvim_lsp' },
-	},
-	snippet = {
+    snippet = {
 		expand = function(args)
-			-- I'm assuming this is a snippet completion
-			-- From docs it looks like specifying a snipper engine is required
-			vim.snippet.expand(args.body)
-		end,
+			require('luasnip').lsp_expand(args.body)
+		end
 	},
-	-- Set keybinds according to what we have in our remap for cmp
-	mapping = cmp.mapping.preset.insert(require('config.remap').cmp_keybinds),
+    sources = {
+        -- cmp-nvim-lsp
+        { name = 'nvim_lsp' },
+    },
+    -- Set keybinds according to what we have in our remap for cmp
+    mapping = cmp.mapping.preset.insert(require('config.remap').cmp_keybinds),
 })
 
 -- Configure LSPs

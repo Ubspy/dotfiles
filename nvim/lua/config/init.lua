@@ -8,6 +8,7 @@ require("config.git")
 require("config.knap")
 require("config.lsp")
 require("config.lualine")
+require("config.snippets")
 require("config.telescope")
 require("config.treesitter")
 
