@@ -22,6 +22,12 @@ return{
 		-- LSP Autocomplete Integration
 		"hrsh7th/cmp-nvim-lsp",
 		lazy = true,
-		url = "https://github.com/hrsh7th/cmp-nvim-lsp"
+		url = "https://github.com/hrsh7th/cmp-nvim-lsp",
+	},
+	{
+		"L3MON4D3/LuaSnip",
+		lazy = false,
+		url = "https://github.com/L3MON4D3/LuaSnip",
+		dependencies = { "hrsh7th/nvim-cmp" }
 	}
 }
