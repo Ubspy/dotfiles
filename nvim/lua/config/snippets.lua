@@ -20,3 +20,6 @@ ls.add_snippets("tex", {
             text("}")
     })
 })
+
+-- Github page for more:
+-- https://github.com/L3MON4D3/LuaSnip
