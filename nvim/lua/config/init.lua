@@ -15,14 +15,14 @@ require("config.treesitter")
 require("config.remap")
 
 -- Add extra space to align tabs
-vim.bo.expandtab = true
+vim.opt.expandtab = true
 
 -- Highlight the line number the cursor is currently on
 vim.wo.cursorline = true
 vim.wo.cursorlineopt = "number"
 
 -- Add <> as a pair for HTML/XML
-vim.bo.matchpairs = "(:),{:},[:],<:>"
+vim.opt.matchpairs = "(:),{:},[:],<:>"
 
 -- Add line numbers
 vim.wo.number = true
@@ -40,10 +40,10 @@ vim.go.smartcase = true
 vim.wo.wrap = false
 
 -- Set tab size to 4 spaces
-vim.bo.shiftwidth = 4       -- When using > or < in normal mode, only shift by 4
-vim.bo.smartindent = true   -- Auto indenting based off brackets and other stuff
-vim.bo.tabstop = 4          -- Set tab to 4 spaces
-vim.bo.softtabstop = 4      -- Smart tabs, so you can turn the tabs into spaces as needed
+vim.opt.shiftwidth = 4       -- When using > or < in normal mode, only shift by 4
+vim.opt.smartindent = true   -- Auto indenting based off brackets and other stuff
+vim.opt.tabstop = 4          -- Set tab to 4 spaces
+vim.opt.softtabstop = 4      -- Smart tabs, so you can turn the tabs into spaces as needed
 
 
 -- More options that might be interesting later:
