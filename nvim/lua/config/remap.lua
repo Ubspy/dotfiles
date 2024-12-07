@@ -37,7 +37,7 @@ vim.api.nvim_create_autocmd("FileType", {
                 vim.cmd('normal! i\r')
 
                 -- If the line matches the regex, start line, whitespace, \item
-                if line:match('^\\s+\\item') then
+                if line:match('^%s*\\item') then
                     -- Inset "\item "
                     vim.cmd('normal! i\\item  ')
                 end
