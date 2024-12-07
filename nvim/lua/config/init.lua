@@ -2,6 +2,7 @@
 require("config.lazy")
 
 -- Rest of the configs
+require("config.autoclose")
 require("config.colors")
 require("config.comments")
 require("config.git")
