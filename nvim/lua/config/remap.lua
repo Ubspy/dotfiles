@@ -42,6 +42,17 @@ vim.api.nvim_create_autocmd("FileType", {
                     vim.cmd('normal! i\\item  ')
                 end
             end })
+
+        -- Same thing for o
+        vim.api.nvim_set_keymap('n', 'o', '',
+            { noremap = true, callback = function()
+                local line = vim.fn.getline('.')
+                vim.cmd('normal! $i\r')
+                if line:match('^%s*\\item') then
+                    vim.cmd('normal! i\\item  ')
+                    vim.cmd('startinsert')
+                end
+            end })
     end
 })
 
