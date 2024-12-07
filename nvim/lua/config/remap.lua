@@ -22,6 +22,29 @@ end )
 -- Telescope vim commands
 vim.keymap.set('n', '<C-f>c', builtin.commands, { desc = 'Telescope vim commands' })
 
+-- Create an item to help with \item in tex files
+-- Autocmd to make it only apply to "tex" files
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "tex",
+    callback = function()
+        -- Do a noremap keybind with a callback for the enter key
+        vim.api.nvim_set_keymap('i', '<CR>', '',
+            { noremap = true, callback = function()
+                -- Look at line when <CR> is pressed
+                local line = vim.fn.getline('.')
+
+                -- Insert newline
+                vim.cmd('normal! i\r')
+
+                -- If the line matches the regex, start line, whitespace, \item
+                if line:match('^\\s+\\item') then
+                    -- Inset "\item "
+                    vim.cmd('normal! i\\item  ')
+                end
+            end })
+    end
+})
+
 -- Create export object to hold LSP keybinds
 local export = {}
 
