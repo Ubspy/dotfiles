@@ -34,7 +34,7 @@ vim.api.nvim_create_autocmd("FileType", {
                 local line = vim.fn.getline('.')
 
                 -- Insert newline
-                vim.cmd('normal! i\r')
+                vim.cmd('normal! a\r')
 
                 -- If the line matches the regex, start line, whitespace, \item
                 if line:match('^%s*\\item') then
@@ -47,7 +47,7 @@ vim.api.nvim_create_autocmd("FileType", {
         vim.api.nvim_set_keymap('n', 'o', '',
             { noremap = true, callback = function()
                 local line = vim.fn.getline('.')
-                vim.cmd('normal! $i\r')
+                vim.cmd('normal! $a\r')
                 if line:match('^%s*\\item') then
                     vim.cmd('normal! i\\item  ')
                     vim.cmd('startinsert')
