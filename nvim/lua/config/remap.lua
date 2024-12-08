@@ -50,8 +50,10 @@ vim.api.nvim_create_autocmd("FileType", {
                 vim.cmd('normal! $a\r')
                 if line:match('^%s*\\item') then
                     vim.cmd('normal! i\\item  ')
-                    vim.cmd('startinsert')
                 end
+
+                -- Start in insert mode
+                vim.cmd('startinsert')
             end })
     end
 })
