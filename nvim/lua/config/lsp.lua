@@ -35,6 +35,7 @@ cmp.setup({
     sources = {
         -- cmp-nvim-lsp
         { name = 'nvim_lsp' },
+        { name = 'luasnip' }
     },
     -- Set keybinds according to what we have in our remap for cmp
     mapping = cmp.mapping.preset.insert(require('config.remap').cmp_keybinds),
