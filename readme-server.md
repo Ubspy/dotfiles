@@ -29,6 +29,7 @@ https://dns.nextdns.io
 nordvpn set meshnet enabled # Meshnet is what allows nordvpn to see this IP as a valid dns server
 nordvpn set autoconnect enabled # Make sure we're always connected
 nordvpn set lan-discovery enabled # Lets this device be seen by LAN devices
+nordvpn set firewall disabled # If I didn't disable the firewall then no devices could talk to the DHCP server
 ```
 
 Check the IP of the meshnet by using `ip addr`. On your client that uses NordVPN, set the NordVPN DNS server to this meshnet IP, either through the GUI, or `nordvpn set dns <ip>`.
@@ -83,6 +84,7 @@ Check the IP of the meshnet by using `ip addr`. On your client that uses NordVPN
 - On the client, set up the mount in fstab or by using the `mount` command as you normally would for NFS, but make sure the type is `nfs4`, not `nfs`.
 - You'll want to make sure that `nfs-server.example.com` points to the IP address of your NFS server. `nfs-server` because of the username in the principle, and `example.com` is the realm of the kerberos server.
 - If you don't have any DNS setup, you can edits your `/etc/hosts` file on the client to add `IP    nfs-server  nfs-server`.
+- On the client, ensure that the user `user` exists, or the user with the same name as your kerberos principle, we will not be using this user, but it's required for idmap and kerberos to properly authenticate.
 - Finally, you'll want to grab a ticket using kinit, and specifying it's from the keytab file: `kinit -k user`.
 - You should be able to access the mounted NFS directory now.
 - One last point of note, ensure that on the NFS server, that the directory to be mounted and the files within are owned by the user `user`, or the username of the kerberos principle that will be used to access them. The username of the linux user accessing them does not matter, but the NFS server should have a user named after that kerberos principle, and the folder and files should be owned by them.
