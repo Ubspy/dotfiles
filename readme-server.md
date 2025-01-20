@@ -103,11 +103,9 @@ After=network.target
 
 [Service]
 ExecStart=/usr/bin/kinit -k user
-Restart=Always
 User=%I
 Group=<GID that has access to /etc/krb5.keytab>
 Type=oneshot
-RemainAfterExit=true
 
 [Install]
 WantedBy=multi-user.target
@@ -119,16 +117,15 @@ WantedBy=multi-user.target
 
 [Unit]
 Description=Refresh Kerberos ticket for user %I after expiration
-After=network.targets
 
 [Timer]
 OnBootSec=1min
-OnUnitActiveSec=12h # Check your ticket expiration time on the KDC server at /etc/krb5kdc/kdc.conf, make sure these match
-Unit=%I@krb-ticket.service
+OnUnitActiveSec=10h # Check your ticket expiration time on the KDC server at /etc/krb5kdc/kdc.conf, make sure this one is less by just a little
+Unit=krb-ticket%I.service
 
 [Install]
 WantedBy=timers.target
 ```
-- Then, to set it so a user automatically always has a ticket: `systemctl enable --now krb-ticket@user.service`
-- Also enable the timer: `systemctl enable --now krb-ticket@user.service`
+- Then, to set it so a user automatically always has a ticket: `systemctl enable --now krb-ticket@user.service`.
+- Also enable the timer: `systemctl enable --now krb-ticket@user.service`.
 - It may be better to just change the ticket life on the KDC to infinite, but this seems more secure and it took me so long to get this working I didn't want to touch it once it finally worked.
