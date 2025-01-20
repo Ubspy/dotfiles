@@ -149,3 +149,36 @@ server {
 - To enable this, create a symlink in `/etc/nginx/sites-enabled/` with `ln -s /etc/nginx/sites-availible/admin /etc/nginx/sites-enabled/`.
 - Test nginx configuration with `nginx -t`.
 - Restart nginx with `systemctl reload nginx`
+
+# Arr Services
+- First you want to follow the [Radarr Installation Guide](https://wiki.servarr.com/radarr/installation/linux).
+- Do the same with any other of the -arr services, I personally use [Sonarr](https://sonarr.tv/#downloads-linux-ubuntu) also.
+- To manage indexers, you should also set up [Prowlarr](https://wiki.servarr.com/prowlarr/installation/linux).
+- As a downloader client, I'm using qbittorrent, but I am running it headless, so I need to start it without x server: `apt install qbittorrent-nox`
+- For the first time run, run `qbittorrent-nox` in an ssh session, and accept the EULA, then login to the web UI at `http://IP:8080` and set the new password for login, the default username is `admin` and the default password is `adminadmin`
+- To make it run after reboot: `systemctl enable qbittorrent-nox@qbtuser.service`
+
+## My specific workflow
+- For my workflow, I set the default download location at where I have my NFS mounted.
+- I also need to give the `qbtuser` a kerberos ticket using `systemctl enable --now krb-ticket@qbtuser.service`
+- I need to do the same for the -arr service users.
+- I then need to edit the `/etc/systemd/system/multi-user.target.wants/qbittorrent-nox@qbtuser.service` file to add the `krb-ticket@qbtuser.service` to the `After=` section, and `ExecStartPre=/bin/sleep 10` to `[Services]` to make sure qbtuser has a valid ticket.
+- I also need to install my VPN and set autoconnect, LAN-Discovery and disable the Firewall, see the `DNS Server > NordVPN` for more details here.
+- I lastly in the qbittorrent advanced settings make sure the only adapter it uses is the `nordlynx` adapter to make sure it only uses VPN connections.
+
+## FlareSolverr
+- The easiest way to run this is docker, because the dependencies on this bad boy are wild, install docker: `apt install docker.io docker`
+- Warning: this image takes >600Mbs, so make sure your VM has space for it.
+- Then, you'll want to start the image with alwyas restart so it starts on boot: `docker run -d --name=laresolverr -p 8191:8191 -e LOG_LEVEL-inffo --restart always ghcr.io/flaresolverr/flaresolverr:latest`
+- FlareSolverr is now running, and you can use it to bypass CloudFlare DNS protection.
+
+## Prowlarr
+- Login to prowlarr at `https://IP:9696` and add FlareSolverr as an indexer proxy in `Settings > Indexers > Indexer Proxies`.
+- Add your indexers, I use public ones that allow sorting by seeders or relevancy.
+- After that I select all and set a minimum seeder count to 50 seeders, this seems like a lot but public trackers almost always lie about seeder numbers.
+- You then want to go to `Settings > Apps` and add whatever -arr services you are using.
+
+## Radarr/Sonarr
+- Add qbittorrent as the downloader
+- Set max download size in `Settings > Indexers` to something you feel is appropriate, I did 20 GB since I will be using mostly 1080p.
+- This should now work for you.
