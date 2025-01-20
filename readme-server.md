@@ -225,3 +225,16 @@ systemctl enable --now krb-ticket@$1.timer
 - Add qbittorrent as the downloader
 - Set max download size in `Settings > Indexers` to something you feel is appropriate, I did 20 GB since I will be using mostly 1080p.
 - This should now work for you.
+
+# JellyFinn
+- Install JellyFin, follow instructions at [their official webpage](https://jellyfin.org/docs/general/installation/linux).
+- You'll need to give access to the NFS storage: `systemctl enable --now krb-ticket@jellyfin.service` and `systemctl enable --now krb-ticket@jellyfin.timer`.
+- You can then connect at `http://<IP>:8096`
+
+## OpenSubtitles
+- I like to install the OpenSubtitles plugin, this will automatically download subtitles.
+- First you'll need to make an account on [their website](https://www.opensubtitles.com/).
+- Then, download the zip file from the latest release on [this GitHub page](https://github.com/jellyfin/jellyfin-plugin-opensubtitles/releases/).
+- Unzip the folder using `unzip` and move the DLL file to `/var/lib/jellyfin/plugins/opensubtitles` (you may need to create the `opensubtitles` directory first).
+- After restarting JellyFin, add your login in the `Dashboard > Plugins` settings for OpenSubtitles.
+- JellyFin should now start automatically downloading subtitles for your libraries, keep in mind this is limited to 20 a day.
