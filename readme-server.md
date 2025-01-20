@@ -129,3 +129,23 @@ WantedBy=timers.target
 - Then, to set it so a user automatically always has a ticket: `systemctl enable --now krb-ticket@user.service`.
 - Also enable the timer: `systemctl enable --now krb-ticket@user.service`.
 - It may be better to just change the ticket life on the KDC to infinite, but this seems more secure and it took me so long to get this working I didn't want to touch it once it finally worked.
+
+# Reverse Proxy
+- Install nginx: `apt intall curl nginx`.
+- To setup the reverse proxy, you'll want to make a file in `/etc/nginx/sites-availible/` with the name of your service.
+- I'll show you an example for `/etc/nginx/sites-availible/admin` for the proxmox admin portal:
+```
+server {
+    listen 80;
+    listen [::]:80;
+    server_name admin.example.com # This is the domain that the reverse proxy will redirect from
+
+    location / {
+        proxy_pass http://<IP>:8006; # This IP you should set based on the IP of the web service we're proxying to
+        include proxy_params;
+    }
+}
+```
+- To enable this, create a symlink in `/etc/nginx/sites-enabled/` with `ln -s /etc/nginx/sites-availible/admin /etc/nginx/sites-enabled/`.
+- Test nginx configuration with `nginx -t`.
+- Restart nginx with `systemctl reload nginx`
