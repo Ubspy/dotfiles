@@ -150,6 +150,49 @@ server {
 - Test nginx configuration with `nginx -t`.
 - Restart nginx with `systemctl reload nginx`
 
+# NAS Server
+- Install samba server: `apt install samba`
+- I created a script to make new samba users:
+```
+#!/bin/bash
+
+function usage {
+	echo "./add-smb-user <user>"
+}
+
+if [ -z $1 ]; then
+	usage
+	exit
+fi
+
+GROUP=`getent group | grep sambashare | cut -d: -f3`
+
+useradd -g $GROUP $1 -d /home/$1
+mkdir /home/$1
+usermod $1 -s /usr/sbin/nologin
+
+chown $1:sambashare -R /home/$1
+
+passwd $1
+smbpasswd -a $1
+
+systemctl enable --now krb-ticket@$1.service
+systemctl enable --now krb-ticket@$1.timer
+```
+- Edit your configuration at `/etc/samba/smb.conf` and add the following at the end:
+```
+[NAS]
+    comment = NAS Server
+    path = /mnt
+    browseable = yes
+    read only = no
+    guest ok = no
+    valid users = @sambashare
+    
+    create mask = 0775      # Allows any user in sambashare to edit files made in NAS folder
+    directory mask = 0775   # Allows any user in sambashare to edit files under directories made in NAS folder
+```
+
 # Arr Services
 - First you want to follow the [Radarr Installation Guide](https://wiki.servarr.com/radarr/installation/linux).
 - Do the same with any other of the -arr services, I personally use [Sonarr](https://sonarr.tv/#downloads-linux-ubuntu) also.
