@@ -238,3 +238,7 @@ systemctl enable --now krb-ticket@$1.timer
 - Unzip the folder using `unzip` and move the DLL file to `/var/lib/jellyfin/plugins/opensubtitles` (you may need to create the `opensubtitles` directory first).
 - After restarting JellyFin, add your login in the `Dashboard > Plugins` settings for OpenSubtitles.
 - JellyFin should now start automatically downloading subtitles for your libraries, keep in mind this is limited to 20 a day.
+
+# TODO:
+- SSL certificate for jellyfin
+- Outside network jellyfin
