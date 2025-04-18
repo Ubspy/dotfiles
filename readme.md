@@ -27,6 +27,20 @@
 export DESKTOP_SESSION=plasma
 exec startplasma-x11
 ```
+### Graphics Drivers (AMD)
+To install graphics drivers for an AMD GPU:
+```
+sudo pacman -S mesa lib32-mesa vulkan-radeon lib32-vulkan-radeon libva-mesa-driver libva-utils
+```
+### Graphics Drivers (Nvidia)
+- To install nvidia drivers:
+- For this setup, add that at the end of the **"Boot with minimal options"** line in `/boot/refind\_linux.conf` file.
+```
+sudo pacman -S nvidia nvidia-utils lib32-nvidia-utils
+```
+- You also want to go into `/etc/mkinitcpio.conf` and edit the `MODULES=()` to add `nvidia nvidia-drm`
+- You'll need to start linux with the following kernel parameter: `nvidia-drm.modeset=1`.
+- For this setup, add that at the end of the **"Boot with minimal options"** line in `/boot/refind\_linux.conf` file.
 ### Wayland alternative
 - KDE Plasma as of 6.0 comes with X11 and Wayland, I recommend Wayland as it has a more updated codebase. However, there are some reasons to stick to X11 still. Check out (this link)[https://old.reddit.com/r/linux_gaming//wiki/faq#wiki_wayland_or_xorg.3F] for more information on which to use.
 - To run KDE, make a script in your home folder and paste the following commands:
@@ -34,8 +48,6 @@ exec startplasma-x11
 #!/bin/bash
 /usr/lib/plasma-dbus-run-session-if-needed /usr/bin/startplasma-wayland
 ```
-- If you have an NVIDIA card, you'll need to start linux with the following kernel parameter: `nvidia-drm.modeset=1`.
-- For this setup, add that at the end of the **"Boot with minimal options"** line in `/boot/refind\_linux.conf` file.
 ### Keyboard
 - I had a problem with my keyboard where it wasn't properly registering the function keys. This is because it assumed FN lock was on. To fix this, edit `/sys/module/hid\_apple/parameters/fnmode` and set it to zero.
 - To fix this, create a file at `/etc/modprobe.d/hid\_apple` and copy the following:
