@@ -67,9 +67,9 @@ Check the IP of the meshnet by using `ip addr`. On your client that uses NordVPN
 ### Creating them on the KDC
 - I'm using kerberos to have users authenticate with NFS, so I'm going to show you how to set up your first user for that.
 - First, you want to enter the admin environment by using `kadmin.local`
-- Then, you want to add your principle for NFS with `addkey -randkey nfs/nfs-server`
+- Then, you want to add your principle for NFS with `addprinc -randkey nfs/nfs-server`
 - The naming scheme uses `service/username`, certain services can be configured using kerberos, like nfs, so they regocnize when you add `nfs/` to the start of a principle.
-- Add the user using `addkey -randkey user`
+- Add the user using `addprinc -randkey user`
 - Now you'll want to add these to a key file, unless you want to type the password every 12 hours when the key expires
 - Use `ktadd -kt /etc/krb5.keytab nfs/nfs-server` to add the nfs principle to the keytab
 - Do the same with the user: `ktadd -kt /etc/krb5.keytab user`
