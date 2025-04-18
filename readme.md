@@ -125,17 +125,6 @@ dm: lightdm
 - I needed to run `sudo virsh net-audostart default` to get it to autostart the default network on boot
 - Don't remove any of the spice stuff or the tablet if you're not doing any VFIO or GPU passthrough, because that's how we see it without a direct GPU passthrough. Likewise, since we are using Spice, we don't need to pass the USB devices through either
 
-# Proxmox server
-Unrelated to my Arch setup, I wanted to document steps for myself on things I might want to remember for my Proxmox home server setup.
-- HP server needs 2 ethernet connections. The one on board is for HP iLO, and the other one is for the actual device ethernet
-- Proxmox enterprise sources need to be commented out in /etc/apt/sources.list.d/*
-- Fans are a bit much, currently they're idling around 30%, I am seeing that the HD controller is at 80C without the server being closed. However, closing the server (putting the lid on) lowered it to 56C
-- DNS server doesn't play with NordVPN without meshnet, install nordvpn on the DNS server, and on both the host and the DNS server, run `nordvpn set meshnet enabled`, and check the meshnet IP of the DNS server. On your machine, run `nordvpn set dns [DNS-mesh-ip]`
-
-
-
-
-
 # Neovim installed packages
 - Telescope: `ripgrep, fd`
 - Copy to clipboard: `xclip`
@@ -143,3 +132,16 @@ Unrelated to my Arch setup, I wanted to document steps for myself on things I mi
 
 # Neovim packages to consider
 - Todo comment highlighter: https://github.com/folke/todo-comments.nvim
+
+# Misc
+## Fusion 360
+- Packages required: `sudo pacman -S curl lsb_release glxinfo wget pkexec wget xdg-open 7z cabextract samba bc`
+- Install Fusion 360 from this wonderful GitHub project [https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux](https://github.com/cryinkfly/Autodesk-Fusion-360-for-Linux)
+- I tried setting up a Windows 10 VM, but it would crash on `Connecting to your data` no matter what I did.
+
+## Ultimaker Cura
+- I installed the `cura-bin` package from the AUR.
+
+## Minecraft
+- I use the `prismlauncher` arch package to run Minecraft.
+- Some modpacks, the sound was incredibly messed up for me. I had to go to `Settings > Minecraft > Tweaks > Use system installation of OpenAL`.
