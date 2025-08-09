@@ -242,3 +242,23 @@ systemctl enable --now krb-ticket@$1.timer
 # TODO:
 - SSL certificate for jellyfin
 - Outside network jellyfin
+
+## Nextcloud
+- I want to set up Nextcloud in a particular way, I want the data to be shared between an smb server and nextcloud. Because of this, I do not use the AIO solution with Docker.
+- I followed the manual setup, specifically the [Ubuntu example found here](https://docs.nextcloud.com/server/latest/admin_manual/installation/example_ubuntu.html)
+- Sometimes after installing the `mariadb-server` package and trying to accessit via `mysql`, it's broken. If you `apt purge mariadb-server` and then reinstall it, that usually fixes it for me.
+- Once you get to the Apache configuration, make sure you enable the `rewrite, headers, env, dir, mime` modules.
+- Edit the `.htaccess` file in `/var/www/nextcloud` and add this at the bottom: `php_value memory_limit 1G`.
+- I think I just had this be erased after an update, make sure that doesn't happen when you update.
+### Updating
+- Speaking of, if you want to update Nextcloud, first ssh into the VM.
+- Change to the `nextcloud` user using `su nextcloud -s /bin/bash`.
+- Change directory into `/var/www/nextcloud`.
+- As the nextcloud user, run this command: `php updater/updater.phar`
+- Make sure afterwards to have it run `occ upgrade` and then disable maintenance mode.
+### Making the data folder NFS mounted
+- NFS mount another folder to use temporarily after the base install.
+- Copy every file from `nextcloud/data` to this new location, sometimes cp misses hidden files, make sure those are copied too.
+- This will likely need to be done as the `nextcloud` user, because of the KRB5 authentication `su nextcloud -s /bin/bash`.
+- Move the current `nextcloud/data` folder somewhere else as a backup.
+- Edit `/etc/fstab` to make sure the NFS is mounted at `/var/www/nextcloud/data`, reboot and this should work.
