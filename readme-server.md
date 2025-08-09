@@ -239,24 +239,59 @@ systemctl enable --now krb-ticket@$1.timer
 - After restarting JellyFin, add your login in the `Dashboard > Plugins` settings for OpenSubtitles.
 - JellyFin should now start automatically downloading subtitles for your libraries, keep in mind this is limited to 20 a day.
 
-# TODO:
-- SSL certificate for jellyfin
-- Outside network jellyfin
+## SSL
+- If you're using a reverse proxy server like me, the following steps need to be completed on that VM instead of the one with Jellyfin installed.
+- You need to install certbot and another python3 nginx package: `apt install certbot python3-certbot-nginx`.
+- Edit your crontab using `crontab -e` and add the following job: `echo "0 0 * * 0 certbot renew --quiet --no-self-upgrade --post-hook 'systemctl reload nginx'`
+- TODO: CHECK THIS
+- TODO: MAYBE UNCOMMENT /etc/cron.d/certbot
+- This cronjob will make sure your certificate bundle is automatically updated.
 
-## Nextcloud
+### Automatic Installation
+- To try the automatic SSL certificatie installation, run `certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d DOMAIN_NAME`.
+- Make sure you're using your public facing domain, because that's what it will be looking for.
+- This didn't work for me, but it may for you! If it works, you can skip the manual section.
+- Find the files that need to be specified in nginx, they should be in `/etc/ssl` somewhere.
+
+### Manual Installation
+- Download your SSL bundle from your domain broker, I'm using PorkBun and the certificates are through LetsEncrypt.
+- Scp them onto the VM with nginx we're using as a reverse proxy.
+- Copy the `domain.cert.pem` to `/etc/ssl/certs/domain_ext.domain.pem`
+- Copy the `private.key.pem` to `/etc/ssl/private/domain_ext.private.key`
+- Run `certbot certonly --manual --preferrred-challenges=dns --cert-path /etc/ssl/certs/domain_ext.domain.pen --key-path /etc/ssl/private/domain_ext.key.pem --chain-path /etc/ssl/certs/domain_ext.domain.pem`
+- Specify the public facing domain that your bundle is for, and you should have it installed.
+- For nginx, the `ssl_certificate` line should have your `/etc/ssl/certs/domain_ext.domain.pem` file specified after
+- For nginx, the `ssl_certificate_key` line should have your `/etc/ssl/private/domain_ext.key.pem` file specified after
+
+## Force the outside facing domain
+- If you want to force SSL, you can, have a clause like this in your site config for Jellyfin:
+```
+server {
+    listen 80;
+    listen [::]:80;
+
+    server_name local.only.comain.com;
+
+    return 301 https://public_domain.com$requesturi;
+}
+```
+
+# Nextcloud
 - I want to set up Nextcloud in a particular way, I want the data to be shared between an smb server and nextcloud. Because of this, I do not use the AIO solution with Docker.
 - I followed the manual setup, specifically the [Ubuntu example found here](https://docs.nextcloud.com/server/latest/admin_manual/installation/example_ubuntu.html)
 - Sometimes after installing the `mariadb-server` package and trying to accessit via `mysql`, it's broken. If you `apt purge mariadb-server` and then reinstall it, that usually fixes it for me.
 - Once you get to the Apache configuration, make sure you enable the `rewrite, headers, env, dir, mime` modules.
 - Edit the `.htaccess` file in `/var/www/nextcloud` and add this at the bottom: `php_value memory_limit 1G`.
 - I think I just had this be erased after an update, make sure that doesn't happen when you update.
-### Updating
+
+## Updating
 - Speaking of, if you want to update Nextcloud, first ssh into the VM.
 - Change to the `nextcloud` user using `su nextcloud -s /bin/bash`.
 - Change directory into `/var/www/nextcloud`.
 - As the nextcloud user, run this command: `php updater/updater.phar`
 - Make sure afterwards to have it run `occ upgrade` and then disable maintenance mode.
-### Making the data folder NFS mounted
+
+## Making the data folder NFS mounted
 - NFS mount another folder to use temporarily after the base install.
 - Copy every file from `nextcloud/data` to this new location, sometimes cp misses hidden files, make sure those are copied too.
 - This will likely need to be done as the `nextcloud` user, because of the KRB5 authentication `su nextcloud -s /bin/bash`.
