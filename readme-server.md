@@ -297,3 +297,8 @@ server {
 - This will likely need to be done as the `nextcloud` user, because of the KRB5 authentication `su nextcloud -s /bin/bash`.
 - Move the current `nextcloud/data` folder somewhere else as a backup.
 - Edit `/etc/fstab` to make sure the NFS is mounted at `/var/www/nextcloud/data`, reboot and this should work.
+
+## Edits to Samba server
+- I want the samba server to have the same files as Nextcloud, the simplest fix if all your users are lowercase, is to have the path for the Samba login be `/mnt/%U/files` where `%U` is the unix username.
+- This doesn't work for me, because my Nextcloud users are uppercase. What I did instead was created a directory `/srv/NAS/` where I have symlinks.
+- For example, the Nextcloud dir is mounted at /mnt/ via NFS, and I have `/srv/NAS/ubspy` symlinked to `/mnt/Ubspy/files`. When `ubspy` logs in on the Samba server, they'll see their nextcloud files.
