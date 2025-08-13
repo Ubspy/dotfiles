@@ -327,3 +327,90 @@ export APACHE_RUN_GROUP=www-data
 */15 * * * * su apache-user -s /bin/bash -c "/usr/bin/php /var/www/nextcloud/occ files:scan --all"
 ```
 - This will run the command every 15 minutes to scan for updated files, you can decrease this interval if you'd like, but it will increase server load.
+
+### Nginx Config
+- This is the config I have on the Nginx side, which is the reverse proxy that then points to the VM with Nextcloud and Apache2:
+```
+server {
+	listen 80;
+	listen [::]:80;
+	
+	server_name office.ubspy.org office.sudoserver.com;
+
+	# Redirect to https
+	return 301 https://office.ubspy.org$request_uri;
+}
+
+server {
+	listen 443;
+	listen [::]:443;
+
+	server_name office.ubspy.org;
+
+	# Use a variable to store the upstream proxy
+	# in this example we are using a hostname which is resolved via DNS
+	# (if you aren't using DNS remove the resolver line and change the variable to point to an IP address e.g `set $jellyfin 127.0.0.1`)
+	set $nextcloud 192.168.1.87;
+
+	# Set SSL certificate public and private key
+	ssl_certificate /etc/ssl/certs/ubspy_org.domain.pem;
+	ssl_certificate_key /etc/ssl/private/ubspy_org.private.key.pem;
+
+	# Include ssl options and set params and trusted certificate
+	include /etc/letsencrypt/options-ssl-nginx.conf;
+	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
+	ssl_trusted_certificate /etc/ssl/certs/ubspy_org.domain.pem;
+
+	# Prevent nginx HTTP Server Detection
+	server_tokens off;
+
+	# HSTS settings
+	# WARNING: Only add the preload option once you read about
+	# the consequences in https://hstspreload.org/. This option
+	# will add the domain to a hardcoded list that is shipped
+	# in all major browsers and getting removed from this list
+	# could take several months.
+	#add_header Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" always;
+
+	# set max upload size and increase upload timeout:
+	client_max_body_size 1G;
+	client_body_timeout 600s;
+
+	# Proxy and client response timeouts
+	# Uncomment an increase these if facing timeout errors during large file uploads
+	#proxy_connect_timeout 60s;
+	#proxy_send_timeout 60s;
+	#proxy_read_timeout 60s;
+	#send_timeout 60s;
+
+	# Enable gzip but do not remove ETag headers
+	gzip on;
+	gzip_vary on;
+	gzip_comp_level 4;
+	gzip_min_length 256;
+	gzip_proxied expired no-cache no-store private no_last_modified no_etag auth;
+	gzip_types application/atom+xml text/javascript application/javascript application/json application/ld+json application/manifest+json application/rss+xml application/vnd.geo+json application/vnd.ms-fontobject application/wasm application/x-font-ttf application/x-web-app-manifest+json application/xhtml+xml application/xml font/opentype image/bmp image/svg+xml image/x-icon text/cache-manifest text/css text/plain text/vcard text/vnd.rim.location.xloc text/vtt text/x-component text/x-cross-domain-policy;
+
+	# Pagespeed is not supported by Nextcloud, so if your server is built
+	# with the `ngx_pagespeed` module, uncomment this line to disable it.
+	#pagespeed off;
+
+	# The settings allows you to optimize the HTTP2 bandwidth.
+	# See https://blog.cloudflare.com/delivering-http-2-upload-speed-improvements/
+	# for tuning hints
+	client_body_buffer_size 512k;
+
+	location / {
+		proxy_pass http://$nextcloud;
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+		proxy_set_header X-Forwarded-Protocol $scheme;
+		proxy_set_header X-Forwarded-Host $http_host;
+
+		# Disable buffering when nginx proxy gets resource heavy when streaming
+		proxy_buffering off;
+	}	
+}
+```
