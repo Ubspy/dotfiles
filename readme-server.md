@@ -298,7 +298,32 @@ server {
 - Move the current `nextcloud/data` folder somewhere else as a backup.
 - Edit `/etc/fstab` to make sure the NFS is mounted at `/var/www/nextcloud/data`, reboot and this should work.
 
-## Edits to Samba server
+## Make it work with the Samba/NAS server
+- I wanted Nextcloud to share data with my NAS server. It took a little tweaking, but I eventually got it to work.
+
+### Edits to Samba server
 - I want the samba server to have the same files as Nextcloud, the simplest fix if all your users are lowercase, is to have the path for the Samba login be `/mnt/%U/files` where `%U` is the unix username.
 - This doesn't work for me, because my Nextcloud users are uppercase. What I did instead was created a directory `/srv/NAS/` where I have symlinks.
 - For example, the Nextcloud dir is mounted at /mnt/ via NFS, and I have `/srv/NAS/ubspy` symlinked to `/mnt/Ubspy/files`. When `ubspy` logs in on the Samba server, they'll see their nextcloud files.
+- Make sure linux users that have access to the samba server are in the same group. For example, if your webserver keeps the default `www-data` group, and the NFS server also has the files owned by `nogroup:www-data`, the Samba server users need the `www-data` group also.
+- I recommend changing the default group, step in the next section.
+
+### Edits to Nextcloud
+- I changed the group that apache2 runs in, edit the `/etc/apache2/envvars`, and change the values of:
+```
+export APACHE_RUN_USER=www-data
+export APACHE_RUN_GROUP=www-data
+```
+- I personally changed it to `nextcloud` and `nextcloud`, but it can be whatever you want.
+- The `umask` for the user running Nextcloud needs to be altered. By default the umask is 0022, so when files are created with a 666 permission, it lowers it to 644.
+- Unfortunately, this means when the users on the smb server try to write, it won't let them, since the files will only be owned by the group. We want a umask of 0002, so the group retains write permissions.
+- To fix this, edit `/var/www/nextcloud/config/config.php` and add this line at in the config array:
+```
+'localstorage.umask' => 0002,
+```
+- By default, Nextcloud assumes the files are only edited by Nextcloud. Thankfully, there's a way to make it check for file updates.
+- Open the crontab by using `crontab -e`, and add the following line at the bottom:
+```
+*/15 * * * * su apache-user -s /bin/bash -c "/usr/bin/php /var/www/nextcloud/occ files:scan --all"
+```
+- This will run the command every 15 minutes to scan for updated files, you can decrease this interval if you'd like, but it will increase server load.
