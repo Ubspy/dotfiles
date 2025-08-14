@@ -328,7 +328,7 @@ export APACHE_RUN_GROUP=www-data
 ```
 - This will run the command every 15 minutes to scan for updated files, you can decrease this interval if you'd like, but it will increase server load.
 
-### Nginx Config
+## Nginx Config
 - This is the config I have on the Nginx side, which is the reverse proxy that then points to the VM with Nextcloud and Apache2:
 ```
 server {
@@ -414,3 +414,19 @@ server {
 	}	
 }
 ```
+
+## Nextcloud config settings
+- You'll want to add the following to to the `/var/www/nextcloud/config/config.php` file, according to the below:
+- If you want to access your Nextcloud installation http://domain.tld/nextcloud via a multiple domains reverse SSL proxy https://ssl-proxy.tld/domain.tld/nextcloud with the IP address 10.0.0.1 you can set the following parameters inside the config/config.php.
+```
+<?php
+$CONFIG = array (
+  'trusted_proxies'   => ['10.0.0.1'],
+  'overwritehost'     => 'ssl-proxy.tld',
+  'overwriteprotocol' => 'https',
+  'overwritewebroot'  => '/domain.tld/nextcloud',
+  'overwritecondaddr' => '^10\.0\.0\.1$',
+  'overwrite.cli.url' => 'https://domain.tld/,
+);
+```
+- Since I have my nextcloud at a subdomain, `office.site.com`, `overwritewebroot` is set to `/`, overwrite host is what I have my local domain set to, the one that only works on my local network.
