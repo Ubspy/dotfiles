@@ -241,7 +241,8 @@ systemctl enable --now krb-ticket@$1.timer
 
 ## SSL
 - If you're using a reverse proxy server like me, the following steps need to be completed on that VM instead of the one with Jellyfin installed.
-- You need to install certbot and another python3 nginx package: `apt install certbot python3-certbot-nginx`.
+- You need to install certbot, **DO NOT USE THE SYSTEM PACKAGE**, currently the certbot package for debian is extremely out of date, and is not the official installation method.
+- Install certbot by following [these instructions](https://certbot.eff.org/instructions?ws=nginx&os=pip).
 - Edit your crontab using `crontab -e` and add the following job: `echo "0 0 * * 0 certbot renew --quiet --no-self-upgrade --post-hook 'systemctl reload nginx'`
 - TODO: CHECK THIS
 - TODO: MAYBE UNCOMMENT /etc/cron.d/certbot
@@ -417,14 +418,14 @@ server {
 
 ## Nextcloud config settings
 - You'll want to add the following to to the `/var/www/nextcloud/config/config.php` file, according to the below:
-- If you want to access your Nextcloud installation http://domain.tld/nextcloud via a multiple domains reverse SSL proxy https://ssl-proxy.tld/domain.tld/nextcloud with the IP address 10.0.0.1 you can set the following parameters inside the config/config.php.
+- If you want to access your Nextcloud installation `http://domain.tld/nextcloud` via a multiple domains reverse SSL proxy `https://ssl-proxy.tld/domain.tld/nextcloud` with the IP address 10.0.0.1 you can set the following parameters inside the config/config.php.
 ```
 <?php
 $CONFIG = array (
   'trusted_proxies'   => ['10.0.0.1'],
-  'overwritehost'     => 'ssl-proxy.tld',
+  'overwritehost'     => 'domain.tld',
   'overwriteprotocol' => 'https',
-  'overwritewebroot'  => '/domain.tld/nextcloud',
+  'overwritewebroot'  => '/nextcloud',
   'overwritecondaddr' => '^10\.0\.0\.1$',
   'overwrite.cli.url' => 'https://domain.tld/,
 );
