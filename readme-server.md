@@ -437,6 +437,7 @@ $CONFIG = array (
 
 ### Reverse proxy setup
 - For clarification, for my current setup, since Nginx is the reverse proxy, I'll be using that one, but I changed the `127.0.0.1` address to the address of the Nextcloud/Collabora server.
+- To be extra clear, because I messed this up, the `location` blocks should be added to your current Nginx configuration for your Nextcloud server. This is not a new config, and `127.0.0.1` should point to the same place the `locaiton /` block is pointing to.
 - You also want to make sure on the Nextcloud server, in the file `/etc/coolwsd/coolwsd.xml` that SSL is enabled and that SSL Termination is diabled.
 - To make Collabora with with SSL, you'll also want to copy over the certificate files from the reverse proxy server. In above mentioned `coolwsd.xml` file, it says where it's expecting the cert files. All you need to do is copy them there, the fullchain and cert file are the same.
 - Also make sure to set the server name in `coolwsd.xml` to your public facing domain name, with the subdomain that accesses Nextcloud.
