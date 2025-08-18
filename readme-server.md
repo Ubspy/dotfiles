@@ -243,26 +243,19 @@ systemctl enable --now krb-ticket@$1.timer
 - If you're using a reverse proxy server like me, the following steps need to be completed on that VM instead of the one with Jellyfin installed.
 - You need to install certbot, **DO NOT USE THE SYSTEM PACKAGE**, currently the certbot package for debian is extremely out of date, and is not the official installation method.
 - Install certbot by following [these instructions](https://certbot.eff.org/instructions?ws=nginx&os=pip).
-- Edit your crontab using `crontab -e` and add the following job: `echo "0 0 * * 0 certbot renew --quiet --no-self-upgrade --post-hook 'systemctl reload nginx'`
-- TODO: CHECK THIS
-- TODO: MAYBE UNCOMMENT /etc/cron.d/certbot
-- This cronjob will make sure your certificate bundle is automatically updated.
-
-### Automatic Installation
-- To try the automatic SSL certificatie installation, run `certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d DOMAIN_NAME`.
+- To request your SSL certificate, run `certbot certonly --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d DOMAIN_NAME -d www.DOMAIN_NAME -d SUBDOMAIN -d www.SUBDOMAIN`.
+- Make sure to add all the subdomains you want. For example, you may want `admin.site.org`, `nextcloud.site.org` and `jellyifn.site.org`. This means having 8 `-d` arguments, one for the base domain, one per subdomain, and one with `www.` for each.
+- I'm not sure if `www.` is required, but I did it just incase.
 - Make sure you're using your public facing domain, because that's what it will be looking for.
-- This didn't work for me, but it may for you! If it works, you can skip the manual section.
-- Find the files that need to be specified in nginx, they should be in `/etc/ssl` somewhere.
+- Certbot will tell you where your ssl files are, in the nginx configs that need ssl certificates, link those files.
+### Wildcard certificate
+- If you want any subdomain to work, you can request the certificate like this: `certbot certonly --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d YOUR_DOMAIN -d *.YOUR_DOMAIM`
+- This is technically less secure, but for most use cases it isn't as important. This way, you don't need to do a new command if you want a new subdomain.
 
-### Manual Installation
-- Download your SSL bundle from your domain broker, I'm using PorkBun and the certificates are through LetsEncrypt.
-- Scp them onto the VM with nginx we're using as a reverse proxy.
-- Copy the `domain.cert.pem` to `/etc/ssl/certs/domain_ext.domain.pem`
-- Copy the `private.key.pem` to `/etc/ssl/private/domain_ext.private.key`
-- Run `certbot certonly --manual --preferrred-challenges=dns --cert-path /etc/ssl/certs/domain_ext.domain.pen --key-path /etc/ssl/private/domain_ext.key.pem --chain-path /etc/ssl/certs/domain_ext.domain.pem`
-- Specify the public facing domain that your bundle is for, and you should have it installed.
-- For nginx, the `ssl_certificate` line should have your `/etc/ssl/certs/domain_ext.domain.pem` file specified after
-- For nginx, the `ssl_certificate_key` line should have your `/etc/ssl/private/domain_ext.key.pem` file specified after
+### Cronjob
+- Edit your crontab using `crontab -e` and add the following job: `0 0 */2 * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null`
+- The page linked above tells you to make it run twice a day, my domain has a limit of 5 requests a week, so I changed it to every 2 days.
+- This cronjob will make sure your certificate bundle is automatically updated.
 
 ## Force the outside facing domain
 - If you want to force SSL, you can, have a clause like this in your site config for Jellyfin:
