@@ -430,3 +430,21 @@ $CONFIG = array (
 );
 ```
 - Since I have my nextcloud at a subdomain, `office.site.com`, `overwritewebroot` is set to `/`, overwrite host is what I have my local domain set to, the one that only works on my local network.
+
+## Office
+- I wanted Nextcloud to also behave like Google Drive, so I followed [this installation guide](https://docs.nextcloud.com/server/latest/admin_manual/office/example-ubuntu.html) to install Collabora Online.
+- After you add the keyrings, and install coolwsd, you'll want to follow the steps [here](https://sdk.collaboraonline.com/docs/installation/Proxy_settings.html) to set up the reverse proxy.
+
+### Reverse proxy setup
+- For clarification, for my current setup, since Nginx is the reverse proxy, I'll be using that one, but I changed the `127.0.0.1` address to the address of the Nextcloud/Collabora server.
+- You also want to make sure on the Nextcloud server, in the file `/etc/coolwsd/coolwsd.xml` that SSL is enabled and that SSL Termination is diabled.
+- To make Collabora with with SSL, you'll also want to copy over the certificate files from the reverse proxy server. In above mentioned `coolwsd.xml` file, it says where it's expecting the cert files. All you need to do is copy them there, the fullchain and cert file are the same.
+- Also make sure to set the server name in `coolwsd.xml` to your public facing domain name, with the subdomain that accesses Nextcloud.
+
+### Nextcloud configuration
+- You'll want to install [this Nextcloud plugin](https://apps.nextcloud.com/apps/richdocuments), it's the interface between Collabora and Nextcloud.
+- In the setting menu `Administration > Office`, you'll want to check `Use your own server`, and set it to `https://publicdomain.extention`.
+- You shouldn't need to disable certificate verification if you did the reverse proxy with SSL, and copied the cert over onto the Nextcloud server.
+- If you scroll down to advanced settings, you'll want to set an allow list for WOPI requests, if you don't do this, anyone from any IP can request the file data, this is extremely insecure.
+- Your allow list should look like `127.0.0.1,192.168.1.0/16`, where `192.168.1.0/16` should be your local network IP address range and subnet. If you local network uses different IP addresses, use that instead of mine.
+- Last note, saving visual settings requires you allow cookies, Collabora and Nextcloud are open source, so we know they aren't doing mallicous cookie nonsense, allow cookies for your hosting if you don't want to re-enable dark mode every time.
