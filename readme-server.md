@@ -248,6 +248,7 @@ systemctl enable --now krb-ticket@$1.timer
 - I'm not sure if `www.` is required, but I did it just incase.
 - Make sure you're using your public facing domain, because that's what it will be looking for.
 - Certbot will tell you where your ssl files are, in the nginx configs that need ssl certificates, link those files.
+
 ### Wildcard certificate
 - If you want any subdomain to work, you can request the certificate like this: `certbot certonly --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d YOUR_DOMAIN -d *.YOUR_DOMAIM`
 - This is technically less secure, but for most use cases it isn't as important. This way, you don't need to do a new command if you want a new subdomain.
@@ -256,6 +257,9 @@ systemctl enable --now krb-ticket@$1.timer
 - Edit your crontab using `crontab -e` and add the following job: `0 0 */2 * * root /opt/certbot/bin/python -c 'import random; import time; time.sleep(random.random() * 3600)' && sudo certbot renew -q" | sudo tee -a /etc/crontab > /dev/null`
 - The page linked above tells you to make it run twice a day, my domain has a limit of 5 requests a week, so I changed it to every 2 days.
 - This cronjob will make sure your certificate bundle is automatically updated.
+
+### Updating certbot
+- To update certbot, run `/opt/certbot/bin/pip install --upgrade certbot certbot-nginx`
 
 ## Force the outside facing domain
 - If you want to force SSL, you can, have a clause like this in your site config for Jellyfin:
