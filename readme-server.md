@@ -320,11 +320,13 @@ export APACHE_RUN_GROUP=www-data
 'localstorage.umask' => 0002,
 ```
 - By default, Nextcloud assumes the files are only edited by Nextcloud. Thankfully, there's a way to make it check for file updates.
-- Open the crontab by using `crontab -e`, and add the following line at the bottom:
+- Open the crontab for the web user by using `crontab -u www-data -e`, and add the following line at the bottom (if you changed your apache2 user, use that user instead of `www-data`):
 ```
-*/15 * * * * su apache-user -s /bin/bash -c "/usr/bin/php /var/www/nextcloud/occ files:scan --all"
+*/15 * * * * /usr/bin/php /var/www/nextcloud/occ files:scan --all
+*/5 * * * * /usr/bin/php /var/www/nextcloud/cron.php
 ```
-- This will run the command every 15 minutes to scan for updated files, you can decrease this interval if you'd like, but it will increase server load.
+- The first job will run the command every 15 minutes to scan for updated files, you can decrease this interval if you'd like, but it will increase server load.
+- The second job is to execute background Nextcloud tasks, make sure to set the background jobs mode to `Cron` in `Administration > Basic Settings`.
 
 ## Nginx Config
 - This is the config I have on the Nginx side, which is the reverse proxy that then points to the VM with Nextcloud and Apache2:
