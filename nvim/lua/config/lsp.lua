@@ -23,6 +23,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
 	end,
 })
 
+-- Make it so LSP error diagnostics are shown when the error is hovered over
+-- There's bug where if you're hovering over an error, then open a new file in the
+-- same buffer, the hover stays
+vim.api.nvim_create_autocmd('CursorHold', {
+    desc = 'LSP Error Hover',
+    callback = function(event)
+        vim.diagnostic.open_float()
+    end,
+})
+
 -- Configure Autocomplete
 local cmp = require('cmp')
 
