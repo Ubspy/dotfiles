@@ -47,6 +47,11 @@ vim.opt.smartindent = true   -- Auto indenting based off brackets and other stuf
 vim.opt.tabstop = 4          -- Set tab to 4 spaces
 vim.opt.softtabstop = 4      -- Smart tabs, so you can turn the tabs into spaces as needed
 
+-- Time it takes when nothing is typed to write to disk, also used for CursorHold event
+vim.go.updatetime = 500
+
+-- Set the amount of autocomplete options to 12, you can still scroll
+vim.opt.pumheight = 12
 
 -- More options that might be interesting later:
 -- Automatically change working dir when using different buffers
