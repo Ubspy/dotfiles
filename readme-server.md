@@ -449,3 +449,6 @@ $CONFIG = array (
 - If you scroll down to advanced settings, you'll want to set an allow list for WOPI requests, if you don't do this, anyone from any IP can request the file data, this is extremely insecure.
 - Your allow list should look like `127.0.0.1,192.168.1.0/16`, where `192.168.1.0/16` should be your local network IP address range and subnet. If you local network uses different IP addresses, use that instead of mine.
 - Last note, saving visual settings requires you allow cookies, Collabora and Nextcloud are open source, so we know they aren't doing mallicous cookie nonsense, allow cookies for your hosting if you don't want to re-enable dark mode every time.
+
+### Spellcheck
+- So spellcheck works, you'll want to install the `collaboraoffice-dict-en` package from apt.
