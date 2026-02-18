@@ -452,3 +452,42 @@ $CONFIG = array (
 
 ### Spellcheck
 - So spellcheck works, you'll want to install the `collaboraoffice-dict-en` package from apt.
+
+# Matrix
+- Recently, Discord has become trash, this is how I setup my Matrix homeserver. This isn't required, matrix.org works fine, but I like self-hosting.
+- First, you'll want to install your matrix server:
+
+## Synapse
+- This is my server of choice until [Tuwunel implements MSC4134](https://github.com/matrix-construct/tuwunel/issues/42). I want to use Element Call, and Synapse supports it.
+- Follow the [Synapse setup guide](https://element-hq.github.io/synapse/latest/setup/installation.html#setting-up-synapse).
+- Here are important config settings (not formatted for yaml, just to show what I changed):
+```
+bind_addresses:  0.0.0.0
+compress: true
+type: http
+tls: false
+
+trusted_key_servers:
+    - server_name: "matrix.example.com"
+
+enable_registration: true
+registration_requres_token: true
+registration_shared_secret: <secret string>
+```
+- Tls is false because we're reverse proxying. Speaking of which, follow the [Synapse reverse proxy guide](https://element-hq.github.io/synapse/latest/reverse_proxy.html).
+
+### Registration
+- With these settings, you first need to make a registration key, this is done by making a POST request to the matrix server to access the admin API.
+- If you have no users, run the `register_new_matrix_user -c /etc/matrix-synapse/homeserver.yaml` command, make yourself a user, and make it admin.
+- Login to the matrix server using Element, or whatever client, and find your access token (in Element, it's user settings > About, towards the bottom).
+- Then, you can make the POST request using that token:
+```
+curl --header "Authorization: Bearer <token>" -X GET http://localhost:8008/_synapse/admin/v1/registration_tokens
+```
+- This will be empty unless you've made a token, there the guide for making one is [here](curl --header "Authorization: Bearer $1" -X GET http://localhost:8008/_synapse/admin/v1/registration_tokens).
+- I like to make a token that lasts forever, because I'm lazy, and I trust my friends enough not to share it around. I can always make a new one if it leaks.
+```
+curl --header "Authorization: Bearer <token>"  -X POST http://localhost:8008/_synapse/admin/v1/registration_tokens/new -d '{"length": 64, "uses_allowed": null, "expiry_time": null}'
+```
+
+### Element Call
