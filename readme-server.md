@@ -335,17 +335,17 @@ server {
 	listen 80;
 	listen [::]:80;
 	
-	server_name office.ubspy.org office.sudoserver.com;
+	server_name office.example.com office.sudoserver.com;
 
 	# Redirect to https
-	return 301 https://office.ubspy.org$request_uri;
+	return 301 https://office.example.com$request_uri;
 }
 
 server {
 	listen 443;
 	listen [::]:443;
 
-	server_name office.ubspy.org;
+	server_name office.example.com;
 
 	# Use a variable to store the upstream proxy
 	# in this example we are using a hostname which is resolved via DNS
@@ -353,13 +353,13 @@ server {
 	set $nextcloud 192.168.1.87;
 
 	# Set SSL certificate public and private key
-	ssl_certificate /etc/ssl/certs/ubspy_org.domain.pem;
-	ssl_certificate_key /etc/ssl/private/ubspy_org.private.key.pem;
+	ssl_certificate /etc/ssl/certs/example_com.domain.pem;
+	ssl_certificate_key /etc/ssl/private/example_com.private.key.pem;
 
 	# Include ssl options and set params and trusted certificate
 	include /etc/letsencrypt/options-ssl-nginx.conf;
 	ssl_dhparam /etc/letsencrypt/ssl-dhparams.pem;
-	ssl_trusted_certificate /etc/ssl/certs/ubspy_org.domain.pem;
+	ssl_trusted_certificate /etc/ssl/certs/example_com.domain.pem;
 
 	# Prevent nginx HTTP Server Detection
 	server_tokens off;
@@ -476,6 +476,88 @@ registration_shared_secret: <secret string>
 ```
 - Tls is false because we're reverse proxying. Speaking of which, follow the [Synapse reverse proxy guide](https://element-hq.github.io/synapse/latest/reverse_proxy.html).
 
+### Reverse Proxy
+- From the [Reverse Proxy Synapse Guide](https://element-hq.github.io/synapse/latest/reverse_proxy.html), setup nginx to properly reverse proxy:
+```
+server {
+	listen 80;
+	listen [::]:80;
+
+	listen 443;
+	listen [::]:443;
+
+	server_name matrix.localserver.com; # This is my local DNS, not a paid for domain
+	
+	# Redirect to https
+	return 301 https://matrix.example.com$request_uri;
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	
+	server_name matrix.example.com;
+
+	# Redirect to https
+	return 301 https://matrix.example.com$request_uri;
+}
+
+# Client-Server API over HTTPS (port 443)
+server {
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
+	
+	listen 8448 ssl http2;
+	listen [::]:8448 ssl http2;
+
+	server_name matrix.example.com;
+
+	# Use a variable to store the upstream proxy
+	# in this example we are using a hostname which is resolved via DNS
+	# (if you aren't using DNS remove the resolver line and change the variable to point to an IP address e.g `set $matrix 127.0.0.1`)
+	set $matrix <LOCAL-IP>;
+
+	location ~ ^(/_matrix|/_synapse/client) {
+		# note: do not add a path (even a single /) after the port in `proxy_pass`,
+		# otherwise nginx will canonicalise the URI and cause signature verification
+		# errors.
+		proxy_pass http://$matrix:8008;
+		proxy_set_header Host $host:$server_port;
+		proxy_set_header X-Forwarded-For $remote_addr;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		# Nginx standard body size is 1MB, which is quite small for media uploads
+		# Increase this to match the max_request_size in your tuwunel.toml
+		client_max_body_size 100M;
+	}
+
+	location /.well-known/matrix/server {
+		default_type application/json;
+		add_header Content-Type application/json;
+		add_header 'Access-Control-Allow-Origin' '*' always;
+		add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+
+		return 200 '{"m.server": "matrix.example.com:443"}';
+	}
+
+	location /.well-known/matrix/client {
+		default_type application/json;
+		add_header Content-Type application/json;
+		add_header 'Access-Control-Allow-Origin' '*' always;
+		add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+		
+		return 200 '{"m.homeserver": { "base_url": "https://matrix.example.com" }, "org.matrix.msc4143.rtc_foci" :[{ "type": "livekit", "livekit_service_url": "https://matrix-rtc.example.com" }]}';
+	}
+
+	# Set SSL certificate public and private key
+	ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+}
+```
+- Learn more about well known: <https://element-hq.github.io/synapse/latest/setup/installation.html?highlight=well%20known#client-well-known-uri>.
+
 ### Registration
 - With these settings, you first need to make a registration key, this is done by making a POST request to the matrix server to access the admin API.
 - If you have no users, run the `register_new_matrix_user -c /etc/matrix-synapse/homeserver.yaml` command, make yourself a user, and make it admin.
@@ -490,4 +572,168 @@ curl --header "Authorization: Bearer <token>" -X GET http://localhost:8008/_syna
 curl --header "Authorization: Bearer <token>"  -X POST http://localhost:8008/_synapse/admin/v1/registration_tokens/new -d '{"length": 64, "uses_allowed": null, "expiry_time": null}'
 ```
 
-### Element Call
+## Element Call
+- To get element call to work, you need two things: `livekit` and `livekit-jwt`.
+- First, install livekit by running this command from their [Github Page](https://github.com/livekit/livekit)
+```
+curl -sSL https://get.livekit.io | bash
+```
+- Then, install livekit-jwt by running this command from their [GitHub Page](https://github.com/element-hq/lk-jwt-service?tab=readme-ov-file)
+```
+cd /usr/local/bin/
+wget https://github.com/element-hq/lk-jwt-service/releases/latest/download/lk-jwt-service_linux_amd64
+chmod +x lk-jwt-service_linux_amd64
+```
+- Setup a config file for livekit, I put mine in `/root/livekit.yaml`, put yours whereever is applicable.
+- Write your config:
+```
+port: 7880                              # This port doesn't matter, but remember it
+  - "0.0.0.0"                           # This is applicable for me, since it's running in a Proxmox VM
+
+rtc:
+  tcp_port: 7881                        # This is a fallback port
+  port_range_start: 50000               # UDP port range start for VoIP
+  port_range_end: 50500                 # UDP port range end for VoIP
+  use_external_ip: false                # Don't use external IP, adds too much overhead
+  enable_loopback_candidate: false      # Idk what this does
+
+room:
+  auto_create: true                     # TO TEST
+
+keys:
+  <KEY>: "<TOKEN>"                      # Both of these are random strings, need to remember them
+                                        # to put them into the jwt service
+```
+### Systemd Services
+- Create a systemd service for livekit:
+```
+[Unit]
+Description=The Livekit voice server service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/livekit-server --config /root/livekit.yaml
+Type=simple
+Restart=alway
+```
+- Create a systemd service for livekit jwt, these environment variables tells JWT how the system is set up. These are the same KEY and SECRET as before:
+```
+[Unit]
+Description=The Livekit JWT Authentication Service
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/lk-jwt-service_linux_amd64
+Environment="LIVEKIT_URL=wss://matrix-rtc.example.com"
+Environment="LIVEKIT_KEY=<KEY>"
+Environment="LIVEKIT_SECRET=<SECRET>"
+Type=simple
+Restart=always
+```
+### Reverse Proxy
+- Now it's time to set up the reverse proxy. I'm mainly following [this guide](https://sspaeth.de/2024/11/sfu/) on setting this up:
+```
+server {
+	listen 80;
+	listen [::]:80;
+
+	listen 443;
+	listen [::]:443;
+
+	server_name matrix-rtc.localserver.com; # This is my local DNS, not a paid for domain
+	
+	# Redirect to https
+	return 301 https://matrix-rtc.example.com$request_uri;
+}
+
+server {
+	listen 80;
+	listen [::]:80;
+	
+	server_name matrix.example.com;
+
+	# Redirect to https
+	return 301 https://matrix-rtc.example.com$request_uri;
+}
+
+# Client-Server API over HTTPS (port 443)
+server {
+	listen 443 ssl http2;
+	listen [::]:443 ssl http2;
+	
+	server_name matrix-rtc.example.com;
+
+    # These next two idk if they're necessary, but it works for me
+	ssl_protocols TLSv1.2 TLSv1.3;
+	ssl_ciphers HIGH:!aNULL:!MD5;
+
+	add_header X-Frame-Options DENY;
+	add_header X-Content-Type-Options nosniff;
+
+	# Use a variable to store the upstream proxy
+	# in this example we are using a hostname which is resolved via DNS
+	# (if you aren't using DNS remove the resolver line and change the variable to point to an IP address e.g `set $matrix 127.0.0.1`)
+	set $matrix <LOCAL IP>;
+
+	# lk-jwt-service traffic
+	location ~ ^(/sfu/get|get_token|/healthz) {
+		proxy_pass http://$matrix:8080;
+
+		proxy_set_header Host $host;
+		proxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+		proxy_set_header X-Forwarded-Proto $scheme;
+
+		proxy_send_timeout 120;
+		proxy_read_timeout 120;
+		proxy_buffering off;
+
+		proxy_set_header Accept-Encoding gzip;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+	}
+
+	# Livekit traffic
+	location / {
+		proxy_pass http://$matrix:7880;
+		
+		proxy_http_version 1.1;
+
+		proxy_cache_bypass $http_upgrade;
+		proxy_set_header Upgrade $http_upgrade;
+		proxy_set_header Connection "upgrade";
+		proxy_set_header Host $host;
+	}
+
+    # This needs to exist for the extra domain, or calls won't work
+	location /.well-known/matrix/server {
+		default_type application/json;
+		add_header Content-Type application/json;
+		add_header 'Access-Control-Allow-Origin' '*' always;
+		add_header 'Access-Control-Allow-Methods' 'GET, OPTIONS' always;
+		add_header 'Access-Control-Allow-Headers' 'Content-Type, Authorization' always;
+
+		return 200 '{"m.server": "matrix.example.com:443"}';
+	}
+
+	# Set SSL certificate public and private key
+	ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+	ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+}
+```
+
+### Port forwarding
+- My setup, I have everything 443 open to my reverse proxy server, which then based off the url will redirect it to the right VM.
+- We will break this philosophy, since there will be a lot of traffic. The VoIP server will use port `7881`, and a range of `50100` to `50200` based on our earlier config.
+- These ports should point DIRECTLY to the matrix VM when you open your ports. This is why there's no reverse proxy for those ports, they're direct to the livekit VM.
+
+### Hosts rerouting
+- This is what got me for a long, long time. When the synapse matrix server tries to talk to livekit, it tries to access `https://matrix-rtc.example.com` from within the network. This does not work on my setup.
+- It is unreachable, gives up, and the call never works.
+- Edit your `/etc/hosts` file, add the following to the top:
+```
+<LOCAL IP>  matrix.example.com
+<LOCAL IP>  matrix-rtc.example.com
+```
+
+- Hopefully after all this, you have a working matrix synapse server with matrix call, self hosted!
