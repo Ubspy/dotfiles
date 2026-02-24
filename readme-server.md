@@ -572,7 +572,7 @@ curl --header "Authorization: Bearer <token>" -X GET http://localhost:8008/_syna
 curl --header "Authorization: Bearer <token>"  -X POST http://localhost:8008/_synapse/admin/v1/registration_tokens/new -d '{"length": 64, "uses_allowed": null, "expiry_time": null}'
 ```
 - Do note, these curl requests should be done from the machine running the server. The /_synapse/admin/ url should not be exposed to the public.
-- For more generation information, visit the [Registraion Documentation page or Synapse](https://element-hq.github.io/synapse/latest/usage/configuration/config_documentation.html#registration)
+- For more generation information, visit the [Registraion Documentation page for Synapse Admin API](https://element-hq.github.io/synapse/latest/usage/administration/admin_api/registration_tokens.html)
 - If interested, I did write a script, in the this repo's files, check out `get-registration-token.sh`. This script will look at all your Synapse server's current tokens, notify you about ones that are expired, or out of uses, and prompt you for deletion. Afterwards, it will generate you a new token with one use and a 24h expiry, and print it out.
 - I think that's the safest way, one use per token and a 24h expiry. That way only people you want on your server will be there.
 
