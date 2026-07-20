@@ -138,10 +138,10 @@ WantedBy=timers.target
 server {
     listen 80;
     listen [::]:80;
-    server_name admin.example.com # This is the domain that the reverse proxy will redirect from
+    server_name admin.example.com; # This is the domain that the reverse proxy will redirect from
 
     location / {
-        proxy_pass http://<IP>:8006; # This IP you should set based on the IP of the web service we're proxying to
+        proxy_pass http://<IP>:<PORT>; # This IP you should set based on the IP of the web service we're proxying to
         include proxy_params;
     }
 }
@@ -149,6 +149,43 @@ server {
 - To enable this, create a symlink in `/etc/nginx/sites-enabled/` with `ln -s /etc/nginx/sites-availible/admin /etc/nginx/sites-enabled/`.
 - Test nginx configuration with `nginx -t`.
 - Restart nginx with `systemctl reload nginx`
+
+## Adding https
+- Install mkcert: `apt install mkcert`
+- Generate your mkcert authority `mkcert -install`
+- Somewhere, I put it in the same directory as my certbot certificates for my public domain (more about this in the JellyFin section), make a wildcard certificate for your local domain, this will only work inside your network:
+```
+mkcert -cert-file cert.pem -key-file privkey-pem example.com *.example.com
+```
+- Then, on your local PC you want to be able to use SSH, you'll want to copy the mkcert authority files. They're stored in `mkcert -CAROOT` (that returns the directory).
+- On your local pc, install mkcert, run `mkcert -CAROOT`, place the files you copy from the server into that folder. Then run `mkcert -install`. This will be our self signed certificates for the local domain webapps.
+- One final step, nginx will need to use these certificates, here's the new default template:
+```
+server {
+    listen 80;
+    listen [::]:80;
+    server_name admin.example.com; # This is the domain that the reverse proxy will redirect from
+
+    return 301 https://admin.example.com$request_uri # Redirects the http request to https
+}
+
+server {
+    listen 443 ssl http2;
+    listen [::]:443 ssl http2;
+    server_name admin.example.com; # This is the domain that the reverse proxy will redirect from
+
+    ssl_protocols TLSv1.3 TLSv1.2;
+
+    # This is wherever you put your mkcert certificates, NOT your -CAROOT dir
+    ssl_certificate /etc/letsencrypt/live/example.com/cert.pem
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem
+
+    location / {
+        proxy_pass http://<IP>:<PORT>; # This IP you should set based on the IP of the web service we're proxying to
+        include proxy_params;
+    }
+}
+```
 
 # NAS Server
 - Install samba server: `apt install samba`
@@ -226,7 +263,7 @@ systemctl enable --now krb-ticket@$1.timer
 - Set max download size in `Settings > Indexers` to something you feel is appropriate, I did 20 GB since I will be using mostly 1080p.
 - This should now work for you.
 
-# JellyFinn
+# JellyFin
 - Install JellyFin, follow instructions at [their official webpage](https://jellyfin.org/docs/general/installation/linux).
 - You'll need to give access to the NFS storage: `systemctl enable --now krb-ticket@jellyfin.service` and `systemctl enable --now krb-ticket@jellyfin.timer`.
 - You can then connect at `http://<IP>:8096`
@@ -240,7 +277,7 @@ systemctl enable --now krb-ticket@$1.timer
 - JellyFin should now start automatically downloading subtitles for your libraries, keep in mind this is limited to 20 a day.
 
 ## SSL
-- If you're using a reverse proxy server like me, the following steps need to be completed on that VM instead of the one with Jellyfin installed.
+- If you're using a reverse proxy server like me, the following steps need to be completed on that VM instead of the one with JellyFin installed.
 - You need to install certbot, **DO NOT USE THE SYSTEM PACKAGE**, currently the certbot package for debian is extremely out of date, and is not the official installation method.
 - Install certbot by following [these instructions](https://certbot.eff.org/instructions?ws=nginx&os=pip).
 - To request your SSL certificate, run `certbot certonly --nginx --agree-tos --redirect --hsts --staple-ocsp --email YOUR_EMAIL -d DOMAIN_NAME -d www.DOMAIN_NAME -d SUBDOMAIN -d www.SUBDOMAIN`.
@@ -262,7 +299,7 @@ systemctl enable --now krb-ticket@$1.timer
 - To update certbot, run `/opt/certbot/bin/pip install --upgrade certbot certbot-nginx`
 
 ## Force the outside facing domain
-- If you want to force SSL, you can, have a clause like this in your site config for Jellyfin:
+- If you want to force SSL, you can, have a clause like this in your site config for JellyFin:
 ```
 server {
     listen 80;
@@ -273,6 +310,22 @@ server {
     return 301 https://public_domain.com$requesturi;
 }
 ```
+
+## Cache
+- Since I'm using a 5GB VM with an NFS volume, my cache fills up quick
+- The cache is where JellyFin stores the transcode mp4 data for media that needs to be transcoded
+- To fix this, I made a folder in the NFS volume for the transcoded cache (keep in mind, I'm using NFS and kerberos, so only the `jellyfin` user can access the directory`:
+```
+su -s /bin/bash jellyfin
+cd <NFS-VOL-DIR>
+mkdir enc-cache
+exit
+```
+- Then, we symlink the transcoding cache to this new folder:
+```
+ln -s <NFS-VOL-DIR> /var/cache/jellyfin/transcodes
+```
+- This solves the filling up on transcoded media during a playback
 
 # Nextcloud
 - I want to set up Nextcloud in a particular way, I want the data to be shared between an smb server and nextcloud. Because of this, I do not use the AIO solution with Docker.
